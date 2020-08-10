@@ -14,6 +14,8 @@ namespace MainService
             services.AddSingleton<IRequestsCollector, RequestsCollector>();
             services.AddSingleton<Metric, UnfinishedRequestsCountMetric>();
             services.AddSingleton<Metric, RequestsAverageTimeMetric>();
+            services.AddSingleton<Metric, RequestsMinTimeMetric>();
+            services.AddSingleton<Metric, RequestsMaxTimeMetric>();
             services.AddSingleton<IMetricsProvider, MetricsProvider>();
             services.AddControllers();
         }
