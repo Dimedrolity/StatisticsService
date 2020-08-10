@@ -1,3 +1,4 @@
+using MainService.Metrics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,9 @@ namespace MainService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IRequestsCollector, RequestsCollector>();
-            services.AddSingleton<Metrics>();
+            services.AddSingleton<Metric, UnfinishedRequestsCountMetric>();
+            services.AddSingleton<Metric, RequestsAverageTimeMetric>();
+            services.AddSingleton<IMetricsProvider, MetricsProvider>();
             services.AddControllers();
         }
 

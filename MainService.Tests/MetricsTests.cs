@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using MainService.Metrics;
 using MainService.Requests;
 using NUnit.Framework;
 
@@ -7,23 +7,20 @@ namespace MainService.Tests
 {
     public class MetricsTests
     {
-        private IRequestsCollector _collector;
-        private IMetrics _metrics;
-
         [Test]
         public void GetUnfinishedRequestsCount_IsCorrect()
         {
-            _collector = new RequestsCollectorStub(
+            var collector = new RequestsCollectorStub(
                 new HashSet<UnfinishedRequest>
                 {
                     new UnfinishedRequest("method", "url", 0),
                     new UnfinishedRequest("method", "url2", 0),
                 },
                 null);
-            _metrics = new Metrics(_collector);
+            var metric = new UnfinishedRequestsCountMetric();
 
-            var actual = _metrics.GetUnfinishedRequestsCount();
-            var expected = _collector.UnfinishedRequests.Count;
+            var actual = metric.GetValue(collector);
+            var expected = collector.UnfinishedRequests.Count.ToString();
 
             Assert.AreEqual(expected, actual);
         }
@@ -31,7 +28,7 @@ namespace MainService.Tests
         [Test]
         public void GetRequestsAverageTime_IsCorrect()
         {
-            _collector = new RequestsCollectorStub(
+            var collector = new RequestsCollectorStub(
                 null,
                 new HashSet<FinishedRequest>
                 {
@@ -39,11 +36,10 @@ namespace MainService.Tests
                     new FinishedRequest("method", "url2", 200),
                     new FinishedRequest("method", "url2", 300),
                 });
-            _metrics = new Metrics(_collector);
+            var metric = new RequestsAverageTimeMetric();
 
-            var actual = (int) _metrics.GetRequestsAverageTime();
-            var expected = (int) _collector.FinishedRequests
-                .Average(r => r.ElapsedTimeInMilliseconds);
+            var actual = metric.GetValue(collector);
+            var expected = 200.ToString();
 
             Assert.AreEqual(expected, actual);
         }

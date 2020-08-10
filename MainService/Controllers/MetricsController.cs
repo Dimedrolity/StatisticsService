@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace MainService.Controllers
 {
@@ -7,25 +9,27 @@ namespace MainService.Controllers
     [Route("api/[controller]")]
     public class MetricsController : ControllerBase
     {
-        private readonly IMetrics _metrics;
+        private readonly IRequestsCollector _collector;
+        private readonly IMetricsProvider _metricsProvider;
 
-        public MetricsController(Metrics metrics)
+        public MetricsController(IRequestsCollector collector, IMetricsProvider metricsProvider)
         {
-            _metrics = metrics;
+            _collector = collector;
+            _metricsProvider = metricsProvider;
         }
 
-        [HttpGet("unfinished-requests-count")]
-        public async Task<IActionResult> GetRequestsCountInWork()
+        [HttpGet("get-all")]
+        public async Task<string> GetAllMetrics()
         {
-            var unfinishedRequestsCount = _metrics.GetUnfinishedRequestsCount();
-            return Ok(unfinishedRequestsCount);
-        }
+            var metricsAsJson = await Task.Run(() =>
+            {
+                var metrics = _metricsProvider.GetAllMetrics()
+                    .ToDictionary(metric => metric.Name, metric => metric.GetValue(_collector));
 
-        [HttpGet("requests-average-time")]
-        public async Task<IActionResult> GetRequestsAverageTime()
-        {
-            var requestsAverageTime = _metrics.GetRequestsAverageTime();
-            return Ok(requestsAverageTime);
+                return JsonConvert.SerializeObject(metrics);
+            });
+
+            return metricsAsJson;
         }
     }
 }
