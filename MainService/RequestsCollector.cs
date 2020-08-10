@@ -26,7 +26,8 @@ namespace MainService
             var unfinishedRequest = UnfinishedRequests.First(request => request.Url == url && request.Method == method);
             UnfinishedRequests.Remove(unfinishedRequest);
 
-            var finishedRequest = new FinishedRequest(method, url, finish - unfinishedRequest.StartTimeInMilliseconds);
+            var finishedRequest =
+                new FinishedRequest(method, url, (int) (finish - unfinishedRequest.StartTimeInMilliseconds));
             FinishedRequests.Add(finishedRequest);
         }
     }

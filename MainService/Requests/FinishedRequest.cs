@@ -2,9 +2,9 @@
 {
     public class FinishedRequest : Request
     {
-        public long ElapsedTimeInMilliseconds { get; }
+        public int ElapsedTimeInMilliseconds { get; }
 
-        public FinishedRequest(string method, string url, long elapsedTimeInMilliseconds) : base(method, url)
+        public FinishedRequest(string method, string url, int elapsedTimeInMilliseconds) : base(method, url)
         {
             ElapsedTimeInMilliseconds = elapsedTimeInMilliseconds;
         }

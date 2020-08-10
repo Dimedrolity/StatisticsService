@@ -2,7 +2,7 @@
 
 namespace MainService.Metrics
 {
-   public class RequestsMinTimeMetric : Metric
+    public class RequestsMinTimeMetric : Metric
     {
         public RequestsMinTimeMetric() : base("requestsMinTime")
         {
@@ -12,7 +12,7 @@ namespace MainService.Metrics
         {
             return (collector.FinishedRequests.Count == 0
                     ? 0
-                    : (int) collector.FinishedRequests
+                    : collector.FinishedRequests
                         .Min(req => req.ElapsedTimeInMilliseconds))
                 .ToString();
         }

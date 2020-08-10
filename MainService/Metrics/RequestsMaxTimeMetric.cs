@@ -2,7 +2,7 @@
 
 namespace MainService.Metrics
 {
-   public class RequestsMaxTimeMetric : Metric
+    public class RequestsMaxTimeMetric : Metric
     {
         public RequestsMaxTimeMetric() : base("requestsMaxTime")
         {
@@ -12,7 +12,7 @@ namespace MainService.Metrics
         {
             return (collector.FinishedRequests.Count == 0
                     ? 0
-                    : (int) collector.FinishedRequests
+                    : collector.FinishedRequests
                         .Max(req => req.ElapsedTimeInMilliseconds))
                 .ToString();
         }
