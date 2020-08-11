@@ -8,6 +8,8 @@ namespace MainService
     {
         public HashSet<UnfinishedRequest> UnfinishedRequests { get; }
         public HashSet<FinishedRequest> FinishedRequests { get; }
+        
+        private readonly object _lockObject = new object();
 
         public RequestsCollector()
         {
@@ -17,18 +19,25 @@ namespace MainService
 
         public void SaveStartedRequest(string method, string url, long startTime)
         {
-            var request = new UnfinishedRequest(method, url, startTime);
-            UnfinishedRequests.Add(request);
+            lock (_lockObject)
+            {
+                var request = new UnfinishedRequest(method, url, startTime);
+                UnfinishedRequests.Add(request);
+            }
         }
 
         public void SaveFinishedRequest(string method, string url, long finish)
         {
-            var unfinishedRequest = UnfinishedRequests.First(request => request.Url == url && request.Method == method);
-            UnfinishedRequests.Remove(unfinishedRequest);
+            lock (_lockObject)
+            {
+                var unfinishedRequest =
+                    UnfinishedRequests.First(request => request.Url == url && request.Method == method);
+                UnfinishedRequests.Remove(unfinishedRequest);
 
-            var finishedRequest =
-                new FinishedRequest(method, url, (int) (finish - unfinishedRequest.StartTimeInMilliseconds));
-            FinishedRequests.Add(finishedRequest);
+                var finishedRequest =
+                    new FinishedRequest(method, url, (int) (finish - unfinishedRequest.StartTimeInMilliseconds));
+                FinishedRequests.Add(finishedRequest);
+            }
         }
     }
 }
