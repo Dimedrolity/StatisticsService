@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using MainService.Requests;
 
 namespace MainService
 {
     public interface IRequestsCollector
     {
-        public HashSet<UnfinishedRequest> UnfinishedRequests { get; }
-        public HashSet<FinishedRequest> FinishedRequests { get; }
+        public ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
+        public ConcurrentBag<FinishedRequest> FinishedRequests { get; }
 
-        public void SaveStartedRequest(string method, string url, long startTime);
-        public void SaveFinishedRequest(string method, string url, long finish);
+        public void SaveStartedRequest(string guid, string method, string url, long startTime);
+        public void SaveFinishedRequest(string guid, long finishTime);
     }
 }

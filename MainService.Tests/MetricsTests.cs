@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using MainService.Metrics;
 using MainService.Requests;
 using NUnit.Framework;
@@ -10,13 +10,10 @@ namespace MainService.Tests
         [Test]
         public void UnfinishedRequestsCountMetric_IsCorrect()
         {
-            var collector = new RequestsCollectorStub(
-                new HashSet<UnfinishedRequest>
-                {
-                    new UnfinishedRequest("method", "url", 0),
-                    new UnfinishedRequest("method", "url2", 0),
-                },
-                null);
+            var dictionary = new ConcurrentDictionary<string, UnfinishedRequest>();
+            dictionary.TryAdd("123", new UnfinishedRequest("method", "url", 0));
+            dictionary.TryAdd("456", new UnfinishedRequest("method", "url2", 0));
+            var collector = new RequestsCollectorStub(dictionary, null);
             var metric = new UnfinishedRequestsCountMetric();
 
             var actual = metric.GetValue(collector);
@@ -30,7 +27,7 @@ namespace MainService.Tests
         {
             var collector = new RequestsCollectorStub(
                 null,
-                new HashSet<FinishedRequest>
+                new ConcurrentBag<FinishedRequest>
                 {
                     new FinishedRequest("method", "url", 100),
                     new FinishedRequest("method", "url2", 200),
@@ -43,13 +40,13 @@ namespace MainService.Tests
 
             Assert.AreEqual(expected, actual);
         }
-        
+
         [Test]
         public void RequestsMinTimeMetric_IsCorrect()
         {
             var collector = new RequestsCollectorStub(
                 null,
-                new HashSet<FinishedRequest>
+                new ConcurrentBag<FinishedRequest>
                 {
                     new FinishedRequest("method", "url", 100),
                     new FinishedRequest("method", "url2", 200),
@@ -62,13 +59,13 @@ namespace MainService.Tests
 
             Assert.AreEqual(expected, actual);
         }
-        
+
         [Test]
         public void RequestsMaxTimeMetric_IsCorrect()
         {
             var collector = new RequestsCollectorStub(
                 null,
-                new HashSet<FinishedRequest>
+                new ConcurrentBag<FinishedRequest>
                 {
                     new FinishedRequest("method", "url", 100),
                     new FinishedRequest("method", "url2", 200),
@@ -81,13 +78,13 @@ namespace MainService.Tests
 
             Assert.AreEqual(expected, actual);
         }
-        
+
         [Test]
         public void RequestsMedianTimeMetric_EvenRequestsCount_IsCorrect()
         {
             var collector = new RequestsCollectorStub(
                 null,
-                new HashSet<FinishedRequest>
+                new ConcurrentBag<FinishedRequest>
                 {
                     new FinishedRequest("method", "url", 100),
                     new FinishedRequest("method", "url2", 200),
@@ -101,13 +98,13 @@ namespace MainService.Tests
 
             Assert.AreEqual(expected, actual);
         }
-        
+
         [Test]
         public void RequestsMedianTimeMetric_OddRequestsCount_IsCorrect()
         {
             var collector = new RequestsCollectorStub(
                 null,
-                new HashSet<FinishedRequest>
+                new ConcurrentBag<FinishedRequest>
                 {
                     new FinishedRequest("method", "url2", 333),
                     new FinishedRequest("method", "url2", 444),
@@ -120,6 +117,5 @@ namespace MainService.Tests
 
             Assert.AreEqual(expected, actual);
         }
-        
     }
 }

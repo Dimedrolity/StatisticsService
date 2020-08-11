@@ -15,7 +15,7 @@ namespace MainService.Tests
         [Test]
         public void SaveStartedRequest_AddsRequestToUnfinishedRequests()
         {
-            _collector.SaveStartedRequest("method", "url", 0);
+            _collector.SaveStartedRequest("123", "method", "url", 0);
 
             var actual = _collector.UnfinishedRequests.Count;
             var expected = 1;
@@ -26,9 +26,9 @@ namespace MainService.Tests
         [Test]
         public void SaveFinishedRequest_RemovesRequestFromUnfinishedRequests()
         {
-            _collector.SaveStartedRequest("method", "url", 0);
-            _collector.SaveFinishedRequest("method", "url", 1);
-            
+            _collector.SaveStartedRequest("123", "method", "url", 0);
+            _collector.SaveFinishedRequest("123", 1);
+
             var actual = _collector.UnfinishedRequests.Count;
             var expected = 0;
 
@@ -38,9 +38,9 @@ namespace MainService.Tests
         [Test]
         public void SaveFinishedRequest_AddsRequestToFinishedRequests()
         {
-            _collector.SaveStartedRequest("method", "url", 0);
-            _collector.SaveFinishedRequest("method", "url", 1);
-            
+            _collector.SaveStartedRequest("123", "method", "url", 0);
+            _collector.SaveFinishedRequest("123", 1);
+
             var actual = _collector.FinishedRequests.Count;
             var expected = 1;
 

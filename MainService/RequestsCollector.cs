@@ -1,43 +1,38 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Concurrent;
 using MainService.Requests;
 
 namespace MainService
 {
     public class RequestsCollector : IRequestsCollector
     {
-        public HashSet<UnfinishedRequest> UnfinishedRequests { get; }
-        public HashSet<FinishedRequest> FinishedRequests { get; }
-        
-        private readonly object _lockObject = new object();
+        public ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
+        public ConcurrentBag<FinishedRequest> FinishedRequests { get; }
 
         public RequestsCollector()
         {
-            UnfinishedRequests = new HashSet<UnfinishedRequest>();
-            FinishedRequests = new HashSet<FinishedRequest>();
+            UnfinishedRequests = new ConcurrentDictionary<string, UnfinishedRequest>();
+            FinishedRequests = new ConcurrentBag<FinishedRequest>();
         }
 
-        public void SaveStartedRequest(string method, string url, long startTime)
+        public void SaveStartedRequest(string guid, string method, string url, long startTime)
         {
-            lock (_lockObject)
-            {
-                var request = new UnfinishedRequest(method, url, startTime);
-                UnfinishedRequests.Add(request);
-            }
+            var request = new UnfinishedRequest(guid, method, startTime);
+            UnfinishedRequests.TryAdd(guid, request);
         }
 
-        public void SaveFinishedRequest(string method, string url, long finish)
+        public void SaveFinishedRequest(string guid, long finish)
         {
-            lock (_lockObject)
-            {
-                var unfinishedRequest =
-                    UnfinishedRequests.First(request => request.Url == url && request.Method == method);
-                UnfinishedRequests.Remove(unfinishedRequest);
+            var isRemoved = UnfinishedRequests.TryRemove(guid, out var startedRequest);
+            if (!isRemoved)
+                throw new ArgumentException(
+                    $"Не удалось удалить элемент из {nameof(UnfinishedRequests)} с guid = {guid}");
 
-                var finishedRequest =
-                    new FinishedRequest(method, url, (int) (finish - unfinishedRequest.StartTimeInMilliseconds));
-                FinishedRequests.Add(finishedRequest);
-            }
+            var method = startedRequest.Method;
+            var url = startedRequest.Url;
+            var elapsedTime = (int) (finish - startedRequest.StartTimeInMilliseconds);
+            var finishedRequest = new FinishedRequest(method, url, elapsedTime);
+            FinishedRequests.Add(finishedRequest);
         }
     }
 }

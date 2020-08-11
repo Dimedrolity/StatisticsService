@@ -18,40 +18,29 @@ namespace MainService.Controllers
         [HttpPost("request-started")]
         public async Task<IActionResult> RequestStarted()
         {
+            var guid = Request.Form["guid"];
             var host = Request.Form["host"];
             var path = Request.Form["path"];
             var method = Request.Form["method"];
             var startTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
             var url = $"{host}/{path}";
 
-            await Task.Run(() =>
-            {
-                _requestsCollector.SaveStartedRequest(method, url, long.Parse(startTime));
-            });
+            await Task.Run(() => { _requestsCollector.SaveStartedRequest(guid, method, url, long.Parse(startTime)); });
 
-            Console.WriteLine($"начал выполнение {method}-запрос {host}/{path}");
-            Console.WriteLine($"время начала запроса = {startTime}");
-            
+            Console.WriteLine($"начал выполнение запрос: {guid} метод: {method} url: {host}/{path}");
+            Console.WriteLine($"время начала запроса: {startTime}");
+
             return Ok();
         }
 
         [HttpPost("request-finished")]
         public async Task<IActionResult> RequestFinished()
         {
-            var host = Request.Form["host"];
-            var path = Request.Form["path"];
-            var method = Request.Form["method"];
+            var guid = Request.Form["guid"];
             var finishTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
-            var url = $"{host}/{path}";
 
-            await Task.Run(() =>
-            {
-                _requestsCollector.SaveFinishedRequest(method, url, long.Parse(finishTime));
-            });
+            await Task.Run(() => { _requestsCollector.SaveFinishedRequest(guid, long.Parse(finishTime)); });
 
-            Console.WriteLine($"закончил выполнение {method}-запрос {host}/{path}");
-            Console.WriteLine($"время завершения запроса = {finishTime}");
-            
             return Ok();
         }
     }

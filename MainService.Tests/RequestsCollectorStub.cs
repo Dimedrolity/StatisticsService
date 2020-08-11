@@ -1,25 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using MainService.Requests;
 
 namespace MainService.Tests
 {
     public class RequestsCollectorStub : IRequestsCollector
     {
-        public HashSet<UnfinishedRequest> UnfinishedRequests { get; }
-        public HashSet<FinishedRequest> FinishedRequests { get; }
-
-        public RequestsCollectorStub(HashSet<UnfinishedRequest> unfinishedRequests, HashSet<FinishedRequest> finishedRequests)
+        public ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
+        public ConcurrentBag<FinishedRequest> FinishedRequests { get; }
+        
+        public RequestsCollectorStub(ConcurrentDictionary<string, UnfinishedRequest> unfinishedRequests,
+            ConcurrentBag<FinishedRequest> finishedRequests)
         {
             UnfinishedRequests = unfinishedRequests;
             FinishedRequests = finishedRequests;
         }
-        
-        public void SaveStartedRequest(string method, string url, long startTime)
+
+        public void SaveStartedRequest(string guid, string method, string url, long startTime)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveFinishedRequest(string method, string url, long finish)
+        public void SaveFinishedRequest(string guid, long finishTime)
         {
             throw new System.NotImplementedException();
         }

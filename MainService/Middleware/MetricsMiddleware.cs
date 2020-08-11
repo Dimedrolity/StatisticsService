@@ -11,6 +11,9 @@ namespace MainService.Middleware
         private readonly RequestDelegate _next;
         private readonly HttpClient _client;
 
+        private readonly string _urlForStartedRequest = "http://localhost:7000/api/requests/request-started";
+        private readonly string _urlForFinishedRequest = "http://localhost:7000/api/requests/request-finished";
+
         public MetricsMiddleware(RequestDelegate next)
         {
             _next = next;
@@ -19,26 +22,26 @@ namespace MainService.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var urlForStartedRequest = "http://localhost:7000/api/requests/request-started";
-            await SendRequestToStatisticsService(urlForStartedRequest);
+            var requestGuid = Guid.NewGuid().ToString();
+
+            var contentAboutStartedRequest = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                {"guid", requestGuid}, {"host", context.Request.Host.Value},
+                {"path", context.Request.Path.Value}, {"method", context.Request.Method},
+                {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
+            });
+
+            await _client.PostAsync(_urlForStartedRequest, contentAboutStartedRequest);
 
             await _next(context);
 
-            var urlForFinishedRequest = "http://localhost:7000/api/requests/request-finished";
-            await SendRequestToStatisticsService(urlForFinishedRequest);
-
-            async Task SendRequestToStatisticsService(string url)
+            var contentAboutFinishedRequest = new FormUrlEncodedContent(new Dictionary<string, string>
             {
-                await _client.PostAsync(url,
-                    new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
-                    {
-                        new KeyValuePair<string, string>("host", context.Request.Host.Value),
-                        new KeyValuePair<string, string>("path", context.Request.Path.Value),
-                        new KeyValuePair<string, string>("method", context.Request.Method),
-                        new KeyValuePair<string, string>("time-as-milliseconds-from-unix-epoch",
-                            DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()),
-                    }));
-            }
+                {"guid", requestGuid},
+                {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
+            });
+
+            await _client.PostAsync(_urlForFinishedRequest, contentAboutFinishedRequest);
         }
     }
 }
