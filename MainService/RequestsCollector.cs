@@ -24,9 +24,8 @@ namespace MainService
         public void SaveFinishedRequest(string guid, long finish)
         {
             var isRemoved = UnfinishedRequests.TryRemove(guid, out var startedRequest);
-            if (!isRemoved)
-                throw new ArgumentException(
-                    $"Не удалось удалить элемент из {nameof(UnfinishedRequests)} с guid = {guid}");
+
+            if (!isRemoved) return;
 
             var method = startedRequest.Method;
             var url = startedRequest.Url;
