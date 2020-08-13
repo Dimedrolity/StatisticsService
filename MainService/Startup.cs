@@ -1,3 +1,4 @@
+using MainService.Controllers;
 using MainService.Metrics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,21 +13,26 @@ namespace MainService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IRequestsCollector, RequestsCollector>();
+
             services.AddSingleton<Metric, UnfinishedRequestsCountMetric>();
             services.AddSingleton<Metric, RequestsAverageTimeMetric>();
             services.AddSingleton<Metric, RequestsMinTimeMetric>();
             services.AddSingleton<Metric, RequestsMaxTimeMetric>();
             services.AddSingleton<Metric, RequestsMedianTimeMetric>();
             services.AddSingleton<IMetricsProvider, MetricsProvider>();
+
+            services.AddSingleton<UdpListener>();
             services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+            await app.UseUdpListener();
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace MainService.Controllers
 {
@@ -9,10 +9,12 @@ namespace MainService.Controllers
     public class RequestsController : ControllerBase
     {
         private readonly IRequestsCollector _requestsCollector;
+        private readonly ILogger<RequestsController> _logger;
 
-        public RequestsController(IRequestsCollector requestsCollector)
+        public RequestsController(IRequestsCollector requestsCollector, ILogger<RequestsController> logger)
         {
             _requestsCollector = requestsCollector;
+            _logger = logger;
         }
 
         [HttpPost("request-started")]
@@ -27,8 +29,8 @@ namespace MainService.Controllers
 
             await Task.Run(() => { _requestsCollector.SaveStartedRequest(guid, method, url, long.Parse(startTime)); });
 
-            Console.WriteLine($"начал выполнение запрос: {guid} метод: {method} url: {host}/{path}");
-            Console.WriteLine($"время начала запроса: {startTime}");
+            _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}/{path}\n" +
+                                   $"время начала запроса: {startTime}");
 
             return Ok();
         }
@@ -40,6 +42,9 @@ namespace MainService.Controllers
             var finishTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
 
             await Task.Run(() => { _requestsCollector.SaveFinishedRequest(guid, long.Parse(finishTime)); });
+
+            _logger.LogInformation($"выполнился запрос: {guid}\n" +
+                                   $"время окончания запроса: {finishTime}");
 
             return Ok();
         }
