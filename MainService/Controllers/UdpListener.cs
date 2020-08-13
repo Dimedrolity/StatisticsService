@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -10,11 +11,20 @@ namespace MainService.Controllers
     public class UdpListener
     {
         private readonly IRequestsCollector _requestsCollector;
+
+        private readonly int _portForStartedRequest;
+        private readonly int _portForFinishedRequest;
+
         private readonly ILogger<UdpListener> _logger;
 
-        public UdpListener(IRequestsCollector requestsCollector, ILogger<UdpListener> logger)
+        public UdpListener(IRequestsCollector requestsCollector, IConfiguration configuration,
+            ILogger<UdpListener> logger)
         {
             _requestsCollector = requestsCollector;
+
+            _portForStartedRequest = int.Parse(configuration["portForStartedRequest_Udp"]);
+            _portForFinishedRequest = int.Parse(configuration["portForFinishedRequest_Udp"]);
+
             _logger = logger;
         }
 
@@ -29,9 +39,7 @@ namespace MainService.Controllers
 
         private async Task ListenForStartedRequests()
         {
-            var portForStartedRequest = 7003;
-
-            using var listener = new UdpClient(portForStartedRequest);
+            using var listener = new UdpClient(_portForStartedRequest);
 
             while (true)
             {
@@ -61,9 +69,7 @@ namespace MainService.Controllers
 
         private async Task ListenForFinishedRequests()
         {
-            var portForFinishedRequest = 7004;
-
-            using var listener = new UdpClient(portForFinishedRequest);
+            using var listener = new UdpClient(_portForFinishedRequest);
 
             while (true)
             {
