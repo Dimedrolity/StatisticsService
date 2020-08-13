@@ -8,13 +8,12 @@ namespace MainService.Middleware
     public class MetricsMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly IRequestSender _requestSender;
 
-        private readonly IRequestSender _httpSender = new HttpSender();
-        private readonly IRequestSender _udpSender = new UdpSender();
-
-        public MetricsMiddleware(RequestDelegate next)
+        public MetricsMiddleware(RequestDelegate next, IRequestSender requestSender)
         {
             _next = next;
+            _requestSender = requestSender;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -28,7 +27,7 @@ namespace MainService.Middleware
                 {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
-            await _udpSender.SendStartedRequest(contentAboutStartedRequest);
+            await _requestSender.SendStartedRequest(contentAboutStartedRequest);
 
             await _next(context);
 
@@ -38,7 +37,7 @@ namespace MainService.Middleware
                 {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
-            await _udpSender.SendFinishedRequest(contentAboutFinishedRequest);
+            await _requestSender.SendFinishedRequest(contentAboutFinishedRequest);
         }
     }
 }
