@@ -2,7 +2,6 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace MainService.Middleware
@@ -14,10 +13,10 @@ namespace MainService.Middleware
         private readonly int _portForStartedRequest;
         private readonly int _portForFinishedRequest;
 
-        public UdpSender(IConfiguration configuration)
+        public UdpSender(IUdpConfig config)
         {
-            _portForStartedRequest = int.Parse(configuration["portForStartedRequest_Udp"]);
-            _portForFinishedRequest = int.Parse(configuration["portForFinishedRequest_Udp"]);
+            _portForStartedRequest = config.GetPortForStartedRequest();
+            _portForFinishedRequest = config.GetPortForFinishedRequest();
         }
 
         public async Task SendStartedRequest(Dictionary<string, string> content)

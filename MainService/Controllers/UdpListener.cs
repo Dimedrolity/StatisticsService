@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+using MainService.Middleware;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -17,13 +17,12 @@ namespace MainService.Controllers
 
         private readonly ILogger<UdpListener> _logger;
 
-        public UdpListener(IRequestsCollector requestsCollector, IConfiguration configuration,
-            ILogger<UdpListener> logger)
+        public UdpListener(IRequestsCollector requestsCollector, IUdpConfig config, ILogger<UdpListener> logger)
         {
             _requestsCollector = requestsCollector;
 
-            _portForStartedRequest = int.Parse(configuration["portForStartedRequest_Udp"]);
-            _portForFinishedRequest = int.Parse(configuration["portForFinishedRequest_Udp"]);
+            _portForStartedRequest = config.GetPortForStartedRequest();
+            _portForFinishedRequest = config.GetPortForFinishedRequest();
 
             _logger = logger;
         }

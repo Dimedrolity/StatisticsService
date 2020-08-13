@@ -1,5 +1,6 @@
 using MainService.Controllers;
 using MainService.Metrics;
+using MainService.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ namespace MainService
             services.AddSingleton<Metric, RequestsMedianTimeMetric>();
             services.AddSingleton<IMetricsProvider, MetricsProvider>();
 
+            services.AddSingleton<IUdpConfig, UdpConfig>();
             services.AddSingleton<UdpListener>();
             services.AddControllers();
         }
