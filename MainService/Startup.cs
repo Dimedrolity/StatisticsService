@@ -24,7 +24,7 @@ namespace MainService
             services.AddSingleton<IMetricsProvider, MetricsProvider>();
 
             services.AddSingleton<IUdpConfig, UdpConfig>();
-            services.AddSingleton<UdpListener>();
+            services.AddSingleton<IUdpListener, UdpListener>();
             services.AddControllers();
 
             services.AddSingleton<IMaintenance, Maintenance>();
