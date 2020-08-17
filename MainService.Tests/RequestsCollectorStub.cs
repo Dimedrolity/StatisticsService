@@ -6,13 +6,15 @@ namespace MainService.Tests
     public class RequestsCollectorStub : IRequestsCollector
     {
         public ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
-        public ConcurrentBag<FinishedRequest> FinishedRequests { get; }
-        
+        public ConcurrentDictionary<string, FinishedRequest> FinishedRequests { get; }
+        public ConcurrentBag<FailedRequest> FailedRequests { get; }
+
         public RequestsCollectorStub(ConcurrentDictionary<string, UnfinishedRequest> unfinishedRequests,
-            ConcurrentBag<FinishedRequest> finishedRequests)
+            ConcurrentDictionary<string, FinishedRequest> finishedRequests, ConcurrentBag<FailedRequest> failedRequests)
         {
             UnfinishedRequests = unfinishedRequests;
             FinishedRequests = finishedRequests;
+            FailedRequests = failedRequests;
         }
 
         public void SaveStartedRequest(string guid, string method, string url, long startTime)

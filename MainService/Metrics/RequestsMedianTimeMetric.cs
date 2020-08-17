@@ -14,7 +14,7 @@ namespace MainService.Metrics
         {
             return (collector.FinishedRequests.Count == 0
                     ? 0
-                    : GetMedian(collector.FinishedRequests
+                    : GetMedian(collector.FinishedRequests.Values
                         .Select(req => req.ElapsedTimeInMilliseconds)
                         .ToArray()))
                 .ToString(CultureInfo.InvariantCulture);

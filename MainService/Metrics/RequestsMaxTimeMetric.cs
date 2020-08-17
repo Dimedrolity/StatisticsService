@@ -12,7 +12,7 @@ namespace MainService.Metrics
         {
             return (collector.FinishedRequests.Count == 0
                     ? 0
-                    : collector.FinishedRequests
+                    : collector.FinishedRequests.Values
                         .Max(req => req.ElapsedTimeInMilliseconds))
                 .ToString();
         }

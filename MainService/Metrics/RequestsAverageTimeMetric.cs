@@ -12,7 +12,7 @@ namespace MainService.Metrics
         {
             return (collector.FinishedRequests.Count == 0
                     ? 0
-                    : (int) collector.FinishedRequests
+                    : (int) collector.FinishedRequests.Values
                         .Average(req => req.ElapsedTimeInMilliseconds))
                 .ToString();
         }

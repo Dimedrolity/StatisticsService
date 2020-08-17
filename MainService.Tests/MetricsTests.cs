@@ -13,7 +13,7 @@ namespace MainService.Tests
             var dictionary = new ConcurrentDictionary<string, UnfinishedRequest>();
             dictionary.TryAdd("123", new UnfinishedRequest("method", "url", 0));
             dictionary.TryAdd("456", new UnfinishedRequest("method", "url2", 0));
-            var collector = new RequestsCollectorStub(dictionary, null);
+            var collector = new RequestsCollectorStub(dictionary, null, null);
             var metric = new UnfinishedRequestsCountMetric();
 
             var actual = metric.GetValue(collector);
@@ -25,14 +25,12 @@ namespace MainService.Tests
         [Test]
         public void RequestsAverageTimeMetric_IsCorrect()
         {
-            var collector = new RequestsCollectorStub(
-                null,
-                new ConcurrentBag<FinishedRequest>
-                {
-                    new FinishedRequest("method", "url", 100),
-                    new FinishedRequest("method", "url2", 200),
-                    new FinishedRequest("method", "url2", 300),
-                });
+            var finishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
+            finishedRequests.TryAdd("1", new FinishedRequest("method", "url", 100));
+            finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
+            finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
+
+            var collector = new RequestsCollectorStub(null, finishedRequests, null);
             var metric = new RequestsAverageTimeMetric();
 
             var actual = metric.GetValue(collector);
@@ -44,14 +42,12 @@ namespace MainService.Tests
         [Test]
         public void RequestsMinTimeMetric_IsCorrect()
         {
-            var collector = new RequestsCollectorStub(
-                null,
-                new ConcurrentBag<FinishedRequest>
-                {
-                    new FinishedRequest("method", "url", 100),
-                    new FinishedRequest("method", "url2", 200),
-                    new FinishedRequest("method", "url2", 300),
-                });
+            var finishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
+            finishedRequests.TryAdd("1", new FinishedRequest("method", "url", 100));
+            finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
+            finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
+
+            var collector = new RequestsCollectorStub(null, finishedRequests, null);
             var metric = new RequestsMinTimeMetric();
 
             var actual = metric.GetValue(collector);
@@ -63,14 +59,13 @@ namespace MainService.Tests
         [Test]
         public void RequestsMaxTimeMetric_IsCorrect()
         {
-            var collector = new RequestsCollectorStub(
-                null,
-                new ConcurrentBag<FinishedRequest>
-                {
-                    new FinishedRequest("method", "url", 100),
-                    new FinishedRequest("method", "url2", 200),
-                    new FinishedRequest("method", "url2", 300),
-                });
+            var finishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
+            finishedRequests.TryAdd("1", new FinishedRequest("method", "url", 100));
+            finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
+            finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
+
+            var collector = new RequestsCollectorStub(null, finishedRequests, null);
+
             var metric = new RequestsMaxTimeMetric();
 
             var actual = metric.GetValue(collector);
@@ -82,15 +77,14 @@ namespace MainService.Tests
         [Test]
         public void RequestsMedianTimeMetric_EvenRequestsCount_IsCorrect()
         {
-            var collector = new RequestsCollectorStub(
-                null,
-                new ConcurrentBag<FinishedRequest>
-                {
-                    new FinishedRequest("method", "url", 100),
-                    new FinishedRequest("method", "url2", 200),
-                    new FinishedRequest("method", "url2", 400),
-                    new FinishedRequest("method", "url2", 800),
-                });
+            var finishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
+            finishedRequests.TryAdd("1", new FinishedRequest("method", "url", 100));
+            finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
+            finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 400));
+            finishedRequests.TryAdd("4", new FinishedRequest("method", "url2", 800));
+
+            var collector = new RequestsCollectorStub(null, finishedRequests, null);
+
             var metric = new RequestsMedianTimeMetric();
 
             var actual = metric.GetValue(collector);
@@ -102,14 +96,13 @@ namespace MainService.Tests
         [Test]
         public void RequestsMedianTimeMetric_OddRequestsCount_IsCorrect()
         {
-            var collector = new RequestsCollectorStub(
-                null,
-                new ConcurrentBag<FinishedRequest>
-                {
-                    new FinishedRequest("method", "url2", 333),
-                    new FinishedRequest("method", "url2", 444),
-                    new FinishedRequest("method", "url2", 555),
-                });
+            var finishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
+            finishedRequests.TryAdd("1", new FinishedRequest("method", "url", 333));
+            finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 444));
+            finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 555));
+
+            var collector = new RequestsCollectorStub(null, finishedRequests, null);
+
             var metric = new RequestsMedianTimeMetric();
 
             var actual = metric.GetValue(collector);

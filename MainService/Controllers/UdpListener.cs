@@ -12,8 +12,7 @@ namespace MainService.Controllers
     {
         private readonly IRequestsCollector _requestsCollector;
 
-        private readonly int _portForStartedRequest;
-        private readonly int _portForFinishedRequest;
+        private readonly int _port;
 
         private readonly ILogger<UdpListener> _logger;
 
@@ -21,40 +20,28 @@ namespace MainService.Controllers
         {
             _requestsCollector = requestsCollector;
 
-            _portForStartedRequest = config.GetPortForStartedRequest();
-            _portForFinishedRequest = config.GetPortForFinishedRequest();
+            _port = config.GetPort();
 
             _logger = logger;
         }
 
         public async Task Listen()
         {
-            var task1 = ListenForStartedRequests();
-
-            var task2 = ListenForFinishedRequests();
-
-            await Task.WhenAll(task1, task2);
-        }
-
-        private async Task ListenForStartedRequests()
-        {
-            using var listener = new UdpClient(_portForStartedRequest);
+            using var listener = new UdpClient(_port);
 
             while (true)
             {
                 var content = await ReceiveContent(listener);
 
-                var guid = content["guid"];
-                var host = content["host"];
-                var path = content["path"];
-                var method = content["method"];
-                var startTime = content["time-as-milliseconds-from-unix-epoch"];
-                var url = $"{host}/{path}";
-
-                await Task.Run(() => _requestsCollector.SaveStartedRequest(guid, method, url, long.Parse(startTime)));
-
-                _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}/{path}\n" +
-                                       $"время начала запроса: {startTime}");
+                switch (content["request-started-or-finished"])
+                {
+                    case "started":
+                        await ParseContentAndSaveStartedRequest(content);
+                        break;
+                    case "finished":
+                        await ParseContentAndSaveFinishedRequest(content);
+                        break;
+                }
             }
         }
 
@@ -66,22 +53,31 @@ namespace MainService.Controllers
             return content;
         }
 
-        private async Task ListenForFinishedRequests()
+        private async Task ParseContentAndSaveStartedRequest(IReadOnlyDictionary<string, string> content)
         {
-            using var listener = new UdpClient(_portForFinishedRequest);
+            var guid = content["guid"];
+            var host = content["host"];
+            var path = content["path"];
+            var method = content["method"];
+            var startTime = content["time-as-milliseconds-from-unix-epoch"];
+            var url = $"{host}/{path}";
 
-            while (true)
-            {
-                var content = await ReceiveContent(listener);
+            await Task.Run(
+                () => _requestsCollector.SaveStartedRequest(guid, method, url, long.Parse(startTime)));
 
-                var guid = content["guid"];
-                var finishTime = content["time-as-milliseconds-from-unix-epoch"];
+            _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}/{path}\n" +
+                                   $"время начала запроса: {startTime}");
+        }
 
-                await Task.Run(() => _requestsCollector.SaveFinishedRequest(guid, long.Parse(finishTime)));
+        private async Task ParseContentAndSaveFinishedRequest(IReadOnlyDictionary<string, string> content)
+        {
+            var guid = content["guid"];
+            var finishTime = content["time-as-milliseconds-from-unix-epoch"];
 
-                _logger.LogInformation($"выполнился запрос: {guid}\n" +
-                                       $"время окончания запроса: {finishTime}");
-            }
+            await Task.Run(() => _requestsCollector.SaveFinishedRequest(guid, long.Parse(finishTime)));
+
+            _logger.LogInformation($"выполнился запрос: {guid}\n" +
+                                   $"время окончания запроса: {finishTime}");
         }
     }
 }

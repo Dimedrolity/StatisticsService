@@ -11,14 +11,14 @@ namespace MainService.Middleware
             _configuration = configuration;
         }
 
-        public int GetPortForStartedRequest()
+        public string GetHost()
         {
-            return int.Parse(_configuration["portForStartedRequest_Udp"]);
+            return _configuration["UdpHost"];
         }
 
-        public int GetPortForFinishedRequest()
+        public int GetPort()
         {
-            return int.Parse(_configuration["portForFinishedRequest_Udp"]);
+            return int.Parse(_configuration["UdpPort"]);
         }
     }
 }

@@ -8,25 +8,25 @@ namespace MainService.Middleware
 {
     public class UdpSender : IRequestSender
     {
-        private readonly string _host = "127.0.0.1";
-
-        private readonly int _portForStartedRequest;
-        private readonly int _portForFinishedRequest;
+        private readonly string _host;
+        private readonly int _port;
 
         public UdpSender(IUdpConfig config)
         {
-            _portForStartedRequest = config.GetPortForStartedRequest();
-            _portForFinishedRequest = config.GetPortForFinishedRequest();
+            _host = config.GetHost();
+            _port = config.GetPort();
         }
 
         public async Task SendStartedRequest(Dictionary<string, string> content)
         {
-            await Send(_portForStartedRequest, content);
+            content.Add("request-started-or-finished", "started");
+            await Send(_port, content);
         }
 
         public async Task SendFinishedRequest(Dictionary<string, string> content)
         {
-            await Send(_portForFinishedRequest, content);
+            content.Add("request-started-or-finished", "finished");
+            await Send(_port, content);
         }
 
         private async Task Send(int port, Dictionary<string, string> content)

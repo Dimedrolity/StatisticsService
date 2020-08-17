@@ -8,7 +8,8 @@ namespace MainService
     public class RequestsCollector : IRequestsCollector
     {
         public ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
-        public ConcurrentBag<FinishedRequest> FinishedRequests { get; }
+        public ConcurrentDictionary<string, FinishedRequest> FinishedRequests { get; }
+        public ConcurrentBag<FailedRequest> FailedRequests { get; }
 
         private readonly long _maxRequestTimeInMilliseconds = 60 * 60 * 1000;
         private readonly int _frequencyOfFinishingOldRequests = 5 * 60 * 1000;
@@ -16,12 +17,13 @@ namespace MainService
         public RequestsCollector()
         {
             UnfinishedRequests = new ConcurrentDictionary<string, UnfinishedRequest>();
-            FinishedRequests = new ConcurrentBag<FinishedRequest>();
+            FinishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
+            FailedRequests = new ConcurrentBag<FailedRequest>();
 
-            Task.Run(FinishOldRequests);
+            Task.Run(MoveOldRequestsToFailedRequests);
         }
 
-        private async Task FinishOldRequests()
+        private async Task MoveOldRequestsToFailedRequests()
         {
             while (true)
             {
@@ -32,8 +34,12 @@ namespace MainService
                     var requestStartTime = request.StartTimeInMilliseconds;
                     var isRequestOld = now - requestStartTime > _maxRequestTimeInMilliseconds;
 
-                    if (isRequestOld)
-                        UnfinishedRequests.TryRemove(guid, out var dummy);
+                    if (!isRequestOld) continue;
+                    if (!UnfinishedRequests.TryRemove(guid, out var oldRequest)) continue;
+
+                    var failedRequest = new FailedRequest(
+                        oldRequest.Method, oldRequest.Url, oldRequest.StartTimeInMilliseconds);
+                    FailedRequests.Add(failedRequest);
                 }
 
                 await Task.Delay(_frequencyOfFinishingOldRequests);
@@ -50,13 +56,19 @@ namespace MainService
         {
             var isRemoved = UnfinishedRequests.TryRemove(guid, out var startedRequest);
 
-            if (!isRemoved) return;
-
-            var method = startedRequest.Method;
-            var url = startedRequest.Url;
-            var elapsedTime = (int) (finish - startedRequest.StartTimeInMilliseconds);
-            var finishedRequest = new FinishedRequest(method, url, elapsedTime);
-            FinishedRequests.Add(finishedRequest);
+            if (isRemoved)
+            {
+                var method = startedRequest.Method;
+                var url = startedRequest.Url;
+                var elapsedTime = (int) (finish - startedRequest.StartTimeInMilliseconds);
+                var finishedRequest = new FinishedRequest(method, url, elapsedTime);
+                FinishedRequests.TryAdd(guid, finishedRequest);
+            }
+            else if (!UnfinishedRequests.ContainsKey(guid) && !FinishedRequests.ContainsKey(guid))
+            {
+                var unknownFailedRequest = new FailedRequest("no method", "no url", finish);
+                FailedRequests.Add(unknownFailedRequest);
+            }
         }
     }
 }
