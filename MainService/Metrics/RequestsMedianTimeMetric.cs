@@ -10,11 +10,11 @@ namespace MainService.Metrics
         {
         }
 
-        public override string GetValue(IRequestsCollector collector)
+        public override string GetValue(IRequestsStorage storage)
         {
-            return (collector.FinishedRequests.Count == 0
+            return (storage.FinishedRequests.Count == 0
                     ? 0
-                    : GetMedian(collector.FinishedRequests.Values
+                    : GetMedian(storage.FinishedRequests.Values
                         .Select(req => req.ElapsedTimeInMilliseconds)
                         .ToArray()))
                 .ToString(CultureInfo.InvariantCulture);

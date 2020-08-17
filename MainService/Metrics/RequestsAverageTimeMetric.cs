@@ -8,11 +8,11 @@ namespace MainService.Metrics
         {
         }
 
-        public override string GetValue(IRequestsCollector collector)
+        public override string GetValue(IRequestsStorage storage)
         {
-            return (collector.FinishedRequests.Count == 0
+            return (storage.FinishedRequests.Count == 0
                     ? 0
-                    : (int) collector.FinishedRequests.Values
+                    : (int) storage.FinishedRequests.Values
                         .Average(req => req.ElapsedTimeInMilliseconds))
                 .ToString();
         }

@@ -1,49 +1,19 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using MainService.Requests;
 
 namespace MainService
 {
-    public class RequestsCollector : IRequestsCollector
+    public class RequestsStorage : IRequestsStorage
     {
         public ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
         public ConcurrentDictionary<string, FinishedRequest> FinishedRequests { get; }
         public ConcurrentBag<FailedRequest> FailedRequests { get; }
 
-        private readonly long _maxRequestTimeInMilliseconds = 60 * 60 * 1000;
-        private readonly int _frequencyOfFinishingOldRequests = 5 * 60 * 1000;
-
-        public RequestsCollector()
+        public RequestsStorage()
         {
             UnfinishedRequests = new ConcurrentDictionary<string, UnfinishedRequest>();
             FinishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
             FailedRequests = new ConcurrentBag<FailedRequest>();
-
-            Task.Run(MoveOldRequestsToFailedRequests);
-        }
-
-        private async Task MoveOldRequestsToFailedRequests()
-        {
-            while (true)
-            {
-                var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-                foreach (var (guid, request) in UnfinishedRequests)
-                {
-                    var requestStartTime = request.StartTimeInMilliseconds;
-                    var isRequestOld = now - requestStartTime > _maxRequestTimeInMilliseconds;
-
-                    if (!isRequestOld) continue;
-                    if (!UnfinishedRequests.TryRemove(guid, out var oldRequest)) continue;
-
-                    var failedRequest = new FailedRequest(
-                        oldRequest.Method, oldRequest.Url, oldRequest.StartTimeInMilliseconds);
-                    FailedRequests.Add(failedRequest);
-                }
-
-                await Task.Delay(_frequencyOfFinishingOldRequests);
-            }
         }
 
         public void SaveStartedRequest(string guid, string method, string url, long startTime)

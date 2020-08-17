@@ -4,20 +4,20 @@ namespace MainService.Tests
 {
     public class Tests
     {
-        private IRequestsCollector _collector;
+        private IRequestsStorage _storage;
 
         [SetUp]
         public void Setup()
         {
-            _collector = new RequestsCollector();
+            _storage = new RequestsStorage();
         }
 
         [Test]
         public void SaveStartedRequest_AddsRequestToUnfinishedRequests()
         {
-            _collector.SaveStartedRequest("123", "method", "url", 0);
+            _storage.SaveStartedRequest("123", "method", "url", 0);
 
-            var actual = _collector.UnfinishedRequests.Count;
+            var actual = _storage.UnfinishedRequests.Count;
             var expected = 1;
 
             Assert.AreEqual(expected, actual);
@@ -26,10 +26,10 @@ namespace MainService.Tests
         [Test]
         public void SaveFinishedRequest_RemovesRequestFromUnfinishedRequests()
         {
-            _collector.SaveStartedRequest("123", "method", "url", 0);
-            _collector.SaveFinishedRequest("123", 1);
+            _storage.SaveStartedRequest("123", "method", "url", 0);
+            _storage.SaveFinishedRequest("123", 1);
 
-            var actual = _collector.UnfinishedRequests.Count;
+            var actual = _storage.UnfinishedRequests.Count;
             var expected = 0;
 
             Assert.AreEqual(expected, actual);
@@ -38,10 +38,10 @@ namespace MainService.Tests
         [Test]
         public void SaveFinishedRequest_AddsRequestToFinishedRequests()
         {
-            _collector.SaveStartedRequest("123", "method", "url", 0);
-            _collector.SaveFinishedRequest("123", 1);
+            _storage.SaveStartedRequest("123", "method", "url", 0);
+            _storage.SaveFinishedRequest("123", 1);
 
-            var actual = _collector.FinishedRequests.Count;
+            var actual = _storage.FinishedRequests.Count;
             var expected = 1;
 
             Assert.AreEqual(expected, actual);

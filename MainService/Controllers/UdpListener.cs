@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MainService.Middleware;
 using Microsoft.Extensions.Logging;
@@ -8,28 +9,28 @@ using Newtonsoft.Json;
 
 namespace MainService.Controllers
 {
-    public class UdpListener
+    public class UdpListener : IUdpListener
     {
-        private readonly IRequestsCollector _requestsCollector;
+        private readonly IRequestsStorage _requestsStorage;
 
         private readonly int _port;
 
         private readonly ILogger<UdpListener> _logger;
 
-        public UdpListener(IRequestsCollector requestsCollector, IUdpConfig config, ILogger<UdpListener> logger)
+        public UdpListener(IRequestsStorage requestsStorage, IUdpConfig config, ILogger<UdpListener> logger)
         {
-            _requestsCollector = requestsCollector;
+            _requestsStorage = requestsStorage;
 
             _port = config.GetPort();
 
             _logger = logger;
         }
 
-        public async Task Listen()
+        public async Task Listen(CancellationToken token)
         {
             using var listener = new UdpClient(_port);
 
-            while (true)
+            while (!token.IsCancellationRequested)
             {
                 var content = await ReceiveContent(listener);
 
@@ -63,7 +64,7 @@ namespace MainService.Controllers
             var url = $"{host}/{path}";
 
             await Task.Run(
-                () => _requestsCollector.SaveStartedRequest(guid, method, url, long.Parse(startTime)));
+                () => _requestsStorage.SaveStartedRequest(guid, method, url, long.Parse(startTime)));
 
             _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}/{path}\n" +
                                    $"время начала запроса: {startTime}");
@@ -74,7 +75,7 @@ namespace MainService.Controllers
             var guid = content["guid"];
             var finishTime = content["time-as-milliseconds-from-unix-epoch"];
 
-            await Task.Run(() => _requestsCollector.SaveFinishedRequest(guid, long.Parse(finishTime)));
+            await Task.Run(() => _requestsStorage.SaveFinishedRequest(guid, long.Parse(finishTime)));
 
             _logger.LogInformation($"выполнился запрос: {guid}\n" +
                                    $"время окончания запроса: {finishTime}");

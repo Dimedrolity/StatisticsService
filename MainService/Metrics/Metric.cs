@@ -4,7 +4,7 @@
     {
         public string Name { get; }
 
-        public abstract string GetValue(IRequestsCollector collector);
+        public abstract string GetValue(IRequestsStorage storage);
 
         protected Metric(string name)
         {

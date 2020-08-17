@@ -13,7 +13,8 @@ namespace MainService
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IRequestsCollector, RequestsCollector>();
+            services.AddSingleton<IRequestsStorage, RequestsStorage>();
+            services.AddSingleton<IOldRequestsCleaner, OldRequestsCleaner>();
 
             services.AddSingleton<Metric, UnfinishedRequestsCountMetric>();
             services.AddSingleton<Metric, RequestsAverageTimeMetric>();
@@ -25,6 +26,8 @@ namespace MainService
             services.AddSingleton<IUdpConfig, UdpConfig>();
             services.AddSingleton<UdpListener>();
             services.AddControllers();
+
+            services.AddSingleton<IMaintenance, Maintenance>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,7 +37,7 @@ namespace MainService
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
-            await app.UseUdpListener();
+            await app.StartMaintenance();
         }
     }
 }

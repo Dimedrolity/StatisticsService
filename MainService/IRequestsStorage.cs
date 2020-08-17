@@ -3,7 +3,7 @@ using MainService.Requests;
 
 namespace MainService
 {
-    public interface IRequestsCollector
+    public interface IRequestsStorage
     {
         public ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
         public ConcurrentDictionary<string, FinishedRequest> FinishedRequests { get; }

@@ -9,12 +9,12 @@ namespace MainService.Controllers
     [Route("api/[controller]")]
     public class MetricsController : ControllerBase
     {
-        private readonly IRequestsCollector _collector;
+        private readonly IRequestsStorage _storage;
         private readonly IMetricsProvider _metricsProvider;
 
-        public MetricsController(IRequestsCollector collector, IMetricsProvider metricsProvider)
+        public MetricsController(IRequestsStorage storage, IMetricsProvider metricsProvider)
         {
-            _collector = collector;
+            _storage = storage;
             _metricsProvider = metricsProvider;
         }
 
@@ -24,7 +24,7 @@ namespace MainService.Controllers
             var metricsAsJson = await Task.Run(() =>
             {
                 var metrics = _metricsProvider.GetAllMetrics()
-                    .ToDictionary(metric => metric.Name, metric => metric.GetValue(_collector));
+                    .ToDictionary(metric => metric.Name, metric => metric.GetValue(_storage));
 
                 return JsonConvert.SerializeObject(metrics);
             });

@@ -6,9 +6,9 @@
         {
         }
 
-        public override string GetValue(IRequestsCollector collector)
+        public override string GetValue(IRequestsStorage storage)
         {
-            return collector.UnfinishedRequests.Count.ToString();
+            return storage.UnfinishedRequests.Count.ToString();
         }
     }
 }

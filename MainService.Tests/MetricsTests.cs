@@ -13,7 +13,7 @@ namespace MainService.Tests
             var dictionary = new ConcurrentDictionary<string, UnfinishedRequest>();
             dictionary.TryAdd("123", new UnfinishedRequest("method", "url", 0));
             dictionary.TryAdd("456", new UnfinishedRequest("method", "url2", 0));
-            var collector = new RequestsCollectorStub(dictionary, null, null);
+            var collector = new RequestsStorageStub(dictionary, null, null);
             var metric = new UnfinishedRequestsCountMetric();
 
             var actual = metric.GetValue(collector);
@@ -30,7 +30,7 @@ namespace MainService.Tests
             finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
             finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
 
-            var collector = new RequestsCollectorStub(null, finishedRequests, null);
+            var collector = new RequestsStorageStub(null, finishedRequests, null);
             var metric = new RequestsAverageTimeMetric();
 
             var actual = metric.GetValue(collector);
@@ -47,7 +47,7 @@ namespace MainService.Tests
             finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
             finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
 
-            var collector = new RequestsCollectorStub(null, finishedRequests, null);
+            var collector = new RequestsStorageStub(null, finishedRequests, null);
             var metric = new RequestsMinTimeMetric();
 
             var actual = metric.GetValue(collector);
@@ -64,7 +64,7 @@ namespace MainService.Tests
             finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
             finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
 
-            var collector = new RequestsCollectorStub(null, finishedRequests, null);
+            var collector = new RequestsStorageStub(null, finishedRequests, null);
 
             var metric = new RequestsMaxTimeMetric();
 
@@ -83,7 +83,7 @@ namespace MainService.Tests
             finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 400));
             finishedRequests.TryAdd("4", new FinishedRequest("method", "url2", 800));
 
-            var collector = new RequestsCollectorStub(null, finishedRequests, null);
+            var collector = new RequestsStorageStub(null, finishedRequests, null);
 
             var metric = new RequestsMedianTimeMetric();
 
@@ -101,7 +101,7 @@ namespace MainService.Tests
             finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 444));
             finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 555));
 
-            var collector = new RequestsCollectorStub(null, finishedRequests, null);
+            var collector = new RequestsStorageStub(null, finishedRequests, null);
 
             var metric = new RequestsMedianTimeMetric();
 

@@ -8,12 +8,12 @@ namespace MainService.Controllers
     [Route("api/[controller]")]
     public class RequestsController : ControllerBase
     {
-        private readonly IRequestsCollector _requestsCollector;
+        private readonly IRequestsStorage _requestsStorage;
         private readonly ILogger<RequestsController> _logger;
 
-        public RequestsController(IRequestsCollector requestsCollector, ILogger<RequestsController> logger)
+        public RequestsController(IRequestsStorage requestsStorage, ILogger<RequestsController> logger)
         {
-            _requestsCollector = requestsCollector;
+            _requestsStorage = requestsStorage;
             _logger = logger;
         }
 
@@ -27,7 +27,7 @@ namespace MainService.Controllers
             var startTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
             var url = $"{host}/{path}";
 
-            await Task.Run(() => { _requestsCollector.SaveStartedRequest(guid, method, url, long.Parse(startTime)); });
+            await Task.Run(() => { _requestsStorage.SaveStartedRequest(guid, method, url, long.Parse(startTime)); });
 
             _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}/{path}\n" +
                                    $"время начала запроса: {startTime}");
@@ -41,7 +41,7 @@ namespace MainService.Controllers
             var guid = Request.Form["guid"];
             var finishTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
 
-            await Task.Run(() => { _requestsCollector.SaveFinishedRequest(guid, long.Parse(finishTime)); });
+            await Task.Run(() => { _requestsStorage.SaveFinishedRequest(guid, long.Parse(finishTime)); });
 
             _logger.LogInformation($"выполнился запрос: {guid}\n" +
                                    $"время окончания запроса: {finishTime}");

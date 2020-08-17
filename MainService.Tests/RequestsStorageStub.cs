@@ -3,13 +3,13 @@ using MainService.Requests;
 
 namespace MainService.Tests
 {
-    public class RequestsCollectorStub : IRequestsCollector
+    public class RequestsStorageStub : IRequestsStorage
     {
         public ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
         public ConcurrentDictionary<string, FinishedRequest> FinishedRequests { get; }
         public ConcurrentBag<FailedRequest> FailedRequests { get; }
 
-        public RequestsCollectorStub(ConcurrentDictionary<string, UnfinishedRequest> unfinishedRequests,
+        public RequestsStorageStub(ConcurrentDictionary<string, UnfinishedRequest> unfinishedRequests,
             ConcurrentDictionary<string, FinishedRequest> finishedRequests, ConcurrentBag<FailedRequest> failedRequests)
         {
             UnfinishedRequests = unfinishedRequests;
