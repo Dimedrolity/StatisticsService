@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace MainService
 {
     public interface IMaintenance
     {
-        public Task Start();
+        public Task Start(CancellationTokenSource tokenSource);
 
         public void Stop();
     }

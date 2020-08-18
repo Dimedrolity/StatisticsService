@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MainService.Controllers
@@ -17,8 +18,8 @@ namespace MainService.Controllers
         [HttpGet("start")]
         public async Task<IActionResult> Start()
         {
-            _maintenance.Start();
-            Task.Delay(1_000);
+            _maintenance.Start(new CancellationTokenSource());
+            await Task.Delay(1_000);
             return Ok("started");
         }
 

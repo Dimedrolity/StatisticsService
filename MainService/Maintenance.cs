@@ -18,14 +18,14 @@ namespace MainService
             _udpListener = udpListener;
         }
 
-        public async Task Start()
+        public async Task Start(CancellationTokenSource tokenSource)
         {
-            _tokenSource = new CancellationTokenSource();
-            
+            _tokenSource = tokenSource;
+
             var udpListenerTask = _udpListener.Listen(_tokenSource.Token);
 
             var requestsCleanerTask = _requestsCleaner.MoveOldRequestsToFailedRequests(_tokenSource.Token);
-            
+
             //TODO передавать токены в контроллеры (MetricsContr, RequestsContr)
 
             await Task.WhenAll(udpListenerTask, requestsCleanerTask);
@@ -33,7 +33,7 @@ namespace MainService
 
         public void Stop()
         {
-            _tokenSource.Cancel();
+            _tokenSource?.Cancel();
         }
 
         public void Dispose()
