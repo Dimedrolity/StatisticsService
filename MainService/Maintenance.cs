@@ -1,42 +1,44 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using MainService.Controllers;
 
-namespace MainService.Controllers
+namespace MainService
 {
     public class Maintenance : IMaintenance, IDisposable
     {
         private readonly IOldRequestsCleaner _requestsCleaner;
         private readonly IUdpListener _udpListener;
 
-        private readonly CancellationTokenSource _tokenSource;
+        private CancellationTokenSource _tokenSource;
 
         public Maintenance(IOldRequestsCleaner requestsCleaner, IUdpListener udpListener)
         {
             _requestsCleaner = requestsCleaner;
             _udpListener = udpListener;
-            _tokenSource = new CancellationTokenSource();
         }
 
         public async Task Start()
         {
-            var token1 = _tokenSource.Token;
-            var task1 = _udpListener.Listen(token1);
+            _tokenSource = new CancellationTokenSource();
+            
+            var udpListenerTask = _udpListener.Listen(_tokenSource.Token);
 
-            var token2 = _tokenSource.Token;
-            var task2 = _requestsCleaner.MoveOldRequestsToFailedRequests(token2);
+            var requestsCleanerTask = _requestsCleaner.MoveOldRequestsToFailedRequests(_tokenSource.Token);
+            
+            //TODO передавать токены в контроллеры (MetricsContr, RequestsContr)
 
-            await Task.WhenAll(task1, task2);
+            await Task.WhenAll(udpListenerTask, requestsCleanerTask);
         }
 
-        public void Finish()
+        public void Stop()
         {
             _tokenSource.Cancel();
         }
 
         public void Dispose()
         {
-            Finish();
+            Stop();
             _tokenSource.Dispose();
         }
     }

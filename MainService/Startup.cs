@@ -25,19 +25,18 @@ namespace MainService
 
             services.AddSingleton<IUdpConfig, UdpConfig>();
             services.AddSingleton<IUdpListener, UdpListener>();
-            services.AddControllers();
-
+            
             services.AddSingleton<IMaintenance, Maintenance>();
+
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-            await app.StartMaintenance();
         }
     }
 }

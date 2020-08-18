@@ -32,7 +32,7 @@ namespace MainService.Controllers
 
             while (!token.IsCancellationRequested)
             {
-                var content = await ReceiveContent(listener);
+                var content = await ReceiveContent(listener, token);
 
                 switch (content["request-started-or-finished"])
                 {
@@ -46,9 +46,13 @@ namespace MainService.Controllers
             }
         }
 
-        private static async Task<Dictionary<string, string>> ReceiveContent(UdpClient receiver)
+        private static async Task<Dictionary<string, string>> ReceiveContent(UdpClient receiver,
+            CancellationToken token)
         {
             var data = await receiver.ReceiveAsync();
+
+            token.ThrowIfCancellationRequested();
+
             var message = Encoding.UTF8.GetString(data.Buffer);
             var content = JsonConvert.DeserializeObject<Dictionary<string, string>>(message);
             return content;

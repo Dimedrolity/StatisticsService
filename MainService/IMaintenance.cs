@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 
-namespace MainService.Controllers
+namespace MainService
 {
     public interface IMaintenance
     {
         public Task Start();
 
-        public void Finish();
+        public void Stop();
     }
 }
