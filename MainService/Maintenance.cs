@@ -7,10 +7,12 @@ namespace MainService
 {
     public class Maintenance : IMaintenance, IDisposable
     {
-        private readonly IOldRequestsCleaner _requestsCleaner;
-        private readonly IUdpListener _udpListener;
+        public bool IsStopped => _tokenSource?.IsCancellationRequested ?? true;
 
         private CancellationTokenSource _tokenSource;
+
+        private readonly IOldRequestsCleaner _requestsCleaner;
+        private readonly IUdpListener _udpListener;
 
         public Maintenance(IOldRequestsCleaner requestsCleaner, IUdpListener udpListener)
         {
@@ -25,9 +27,7 @@ namespace MainService
             var udpListenerTask = _udpListener.Listen(_tokenSource.Token);
 
             var requestsCleanerTask = _requestsCleaner.MoveOldRequestsToFailedRequests(_tokenSource.Token);
-
-            //TODO передавать токены в контроллеры (MetricsContr, RequestsContr)
-
+            
             await Task.WhenAll(udpListenerTask, requestsCleanerTask);
         }
 

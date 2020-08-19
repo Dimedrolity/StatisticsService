@@ -8,11 +8,14 @@ namespace MainService.Controllers
     [Route("api/[controller]")]
     public class RequestsController : ControllerBase
     {
+        private readonly IMaintenance _maintenance;
         private readonly IRequestsStorage _requestsStorage;
         private readonly ILogger<RequestsController> _logger;
 
-        public RequestsController(IRequestsStorage requestsStorage, ILogger<RequestsController> logger)
+        public RequestsController(IMaintenance maintenance, IRequestsStorage requestsStorage,
+            ILogger<RequestsController> logger)
         {
+            _maintenance = maintenance;
             _requestsStorage = requestsStorage;
             _logger = logger;
         }
@@ -20,6 +23,8 @@ namespace MainService.Controllers
         [HttpPost("request-started")]
         public async Task<IActionResult> RequestStarted()
         {
+            if (_maintenance.IsStopped) return StatusCode(403);
+
             var guid = Request.Form["guid"];
             var host = Request.Form["host"];
             var path = Request.Form["path"];
@@ -38,6 +43,8 @@ namespace MainService.Controllers
         [HttpPost("request-finished")]
         public async Task<IActionResult> RequestFinished()
         {
+            if (_maintenance.IsStopped) return StatusCode(403);
+
             var guid = Request.Form["guid"];
             var finishTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
 

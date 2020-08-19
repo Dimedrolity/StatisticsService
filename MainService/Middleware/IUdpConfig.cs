@@ -2,7 +2,7 @@
 {
     public interface IUdpConfig
     {
-        public string GetHost();
-        public int GetPort();
+        string GetHost();
+        int GetPort();
     }
 }

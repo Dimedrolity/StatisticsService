@@ -5,8 +5,10 @@ namespace MainService
 {
     public interface IMaintenance
     {
-        public Task Start(CancellationTokenSource tokenSource);
+        Task Start(CancellationTokenSource tokenSource);
 
-        public void Stop();
+        void Stop();
+
+        bool IsStopped { get; }
     }
 }

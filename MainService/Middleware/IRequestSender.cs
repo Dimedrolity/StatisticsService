@@ -5,7 +5,7 @@ namespace MainService.Middleware
 {
     public interface IRequestSender
     {
-        public Task SendStartedRequest(Dictionary<string, string> content);
-        public Task SendFinishedRequest(Dictionary<string, string> content);
+        Task SendStartedRequest(Dictionary<string, string> content);
+        Task SendFinishedRequest(Dictionary<string, string> content);
     }
 }

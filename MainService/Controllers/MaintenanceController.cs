@@ -20,14 +20,17 @@ namespace MainService.Controllers
         {
             _maintenance.Start(new CancellationTokenSource());
             await Task.Delay(1_000);
-            return Ok("started");
+
+            return _maintenance.IsStopped ? StatusCode(403) : StatusCode(200);
         }
 
         [HttpGet("stop")]
         public async Task<IActionResult> Stop()
         {
             _maintenance.Stop();
-            return Ok("stopped");
+            await Task.Delay(1_000);
+            
+            return _maintenance.IsStopped ? StatusCode(200) : StatusCode(403);
         }
     }
 }

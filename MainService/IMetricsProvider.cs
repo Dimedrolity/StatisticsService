@@ -5,6 +5,6 @@ namespace MainService
 {
     public interface IMetricsProvider
     {
-        public IEnumerable<Metric> GetAllMetrics();
+        IEnumerable<Metric> GetAllMetrics();
     }
 }
