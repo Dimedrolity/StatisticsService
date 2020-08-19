@@ -7,40 +7,42 @@ namespace MainService.Tests
 {
     public class MaintenanceTests
     {
+        private IOldRequestsCleaner _requestsCleaner;
+        private IUdpListener _udpListener;
+        private Maintenance _maintenance;
+
+        [SetUp]
+        public void Setup()
+        {
+            _requestsCleaner = A.Fake<IOldRequestsCleaner>();
+            _udpListener = A.Fake<IUdpListener>();
+            _maintenance = new Maintenance(_requestsCleaner, _udpListener);
+        }
+        
         [Test]
         public void Start_ActivatesUdpListener()
         {
-            var requestsCleaner = A.Fake<IOldRequestsCleaner>();
-            var udpListener = A.Fake<IUdpListener>();
-            var maintenance = new Maintenance(requestsCleaner, udpListener);
-            maintenance.Start(new CancellationTokenSource());
+            _maintenance.Start(new CancellationTokenSource());
 
-            A.CallTo(() => udpListener.Listen(A<CancellationToken>._))
+            A.CallTo(() => _udpListener.Listen(A<CancellationToken>._))
                 .WithAnyArguments().MustHaveHappened(1, Times.Exactly);
         }
 
         [Test]
         public void Start_ActivatesOldRequestsCleaner()
         {
-            var requestsCleaner = A.Fake<IOldRequestsCleaner>();
-            var udpListener = A.Fake<IUdpListener>();
-            var maintenance = new Maintenance(requestsCleaner, udpListener);
-            maintenance.Start(new CancellationTokenSource());
+            _maintenance.Start(new CancellationTokenSource());
 
-            A.CallTo(() => requestsCleaner.MoveOldRequestsToFailedRequests(A<CancellationToken>._))
+            A.CallTo(() => _requestsCleaner.MoveOldRequestsToFailedRequests(A<CancellationToken>._))
                 .WithAnyArguments().MustHaveHappened(1, Times.Exactly);
         }
 
         [Test]
         public void Stop_CancelsToken()
         {
-            var requestsCleaner = A.Fake<IOldRequestsCleaner>();
-            var udpListener = A.Fake<IUdpListener>();
-            var maintenance = new Maintenance(requestsCleaner, udpListener);
-
             var tokenSource = new CancellationTokenSource();
-            maintenance.Start(tokenSource);
-            maintenance.Stop();
+            _maintenance.Start(tokenSource);
+            _maintenance.Stop();
 
             Assert.IsTrue(tokenSource.IsCancellationRequested);
         }
