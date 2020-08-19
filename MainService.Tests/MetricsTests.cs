@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using FakeItEasy;
 using MainService.Metrics;
 using MainService.Requests;
 using NUnit.Framework;
@@ -10,14 +11,17 @@ namespace MainService.Tests
         [Test]
         public void UnfinishedRequestsCountMetric_IsCorrect()
         {
-            var dictionary = new ConcurrentDictionary<string, UnfinishedRequest>();
-            dictionary.TryAdd("123", new UnfinishedRequest("method", "url", 0));
-            dictionary.TryAdd("456", new UnfinishedRequest("method", "url2", 0));
-            var collector = new RequestsStorageStub(dictionary, null, null);
+            var unfinishedRequests = new ConcurrentDictionary<string, UnfinishedRequest>();
+            unfinishedRequests.TryAdd("123", new UnfinishedRequest("method", "url", 0));
+            unfinishedRequests.TryAdd("456", new UnfinishedRequest("method", "url2", 0));
+
+            var storage = A.Fake<IRequestsStorage>();
+            A.CallTo(() => storage.UnfinishedRequests).Returns(unfinishedRequests);
+
             var metric = new UnfinishedRequestsCountMetric();
 
-            var actual = metric.GetValue(collector);
-            var expected = collector.UnfinishedRequests.Count.ToString();
+            var actual = metric.GetValue(storage);
+            var expected = storage.UnfinishedRequests.Count.ToString();
 
             Assert.AreEqual(expected, actual);
         }
@@ -30,10 +34,12 @@ namespace MainService.Tests
             finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
             finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
 
-            var collector = new RequestsStorageStub(null, finishedRequests, null);
+            var storage = A.Fake<IRequestsStorage>();
+            A.CallTo(() => storage.FinishedRequests).Returns(finishedRequests);
+
             var metric = new RequestsAverageTimeMetric();
 
-            var actual = metric.GetValue(collector);
+            var actual = metric.GetValue(storage);
             var expected = 200.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -47,10 +53,12 @@ namespace MainService.Tests
             finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
             finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
 
-            var collector = new RequestsStorageStub(null, finishedRequests, null);
+            var storage = A.Fake<IRequestsStorage>();
+            A.CallTo(() => storage.FinishedRequests).Returns(finishedRequests);
+
             var metric = new RequestsMinTimeMetric();
 
-            var actual = metric.GetValue(collector);
+            var actual = metric.GetValue(storage);
             var expected = 100.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -64,11 +72,12 @@ namespace MainService.Tests
             finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
             finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
 
-            var collector = new RequestsStorageStub(null, finishedRequests, null);
+            var storage = A.Fake<IRequestsStorage>();
+            A.CallTo(() => storage.FinishedRequests).Returns(finishedRequests);
 
             var metric = new RequestsMaxTimeMetric();
 
-            var actual = metric.GetValue(collector);
+            var actual = metric.GetValue(storage);
             var expected = 300.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -83,11 +92,12 @@ namespace MainService.Tests
             finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 400));
             finishedRequests.TryAdd("4", new FinishedRequest("method", "url2", 800));
 
-            var collector = new RequestsStorageStub(null, finishedRequests, null);
+            var storage = A.Fake<IRequestsStorage>();
+            A.CallTo(() => storage.FinishedRequests).Returns(finishedRequests);
 
             var metric = new RequestsMedianTimeMetric();
 
-            var actual = metric.GetValue(collector);
+            var actual = metric.GetValue(storage);
             var expected = 300.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -101,11 +111,12 @@ namespace MainService.Tests
             finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 444));
             finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 555));
 
-            var collector = new RequestsStorageStub(null, finishedRequests, null);
+            var storage = A.Fake<IRequestsStorage>();
+            A.CallTo(() => storage.FinishedRequests).Returns(finishedRequests);
 
             var metric = new RequestsMedianTimeMetric();
 
-            var actual = metric.GetValue(collector);
+            var actual = metric.GetValue(storage);
             var expected = 444.ToString();
 
             Assert.AreEqual(expected, actual);
