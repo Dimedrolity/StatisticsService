@@ -16,21 +16,17 @@ namespace MainService.Controllers
         }
 
         [HttpGet("start")]
-        public async Task<IActionResult> Start()
+        public IActionResult Start()
         {
-            _maintenance.Start(new CancellationTokenSource());
-            await Task.Delay(1_000);
-
-            return _maintenance.IsStopped ? StatusCode(403) : StatusCode(200);
+            _maintenance.Start();
+            return Ok("service started");
         }
 
         [HttpGet("stop")]
-        public async Task<IActionResult> Stop()
+        public IActionResult Stop()
         {
             _maintenance.Stop();
-            await Task.Delay(1_000);
-            
-            return _maintenance.IsStopped ? StatusCode(200) : StatusCode(403);
+            return Ok("service stopped");
         }
     }
 }

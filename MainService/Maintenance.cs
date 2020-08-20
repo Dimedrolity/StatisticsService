@@ -20,14 +20,14 @@ namespace MainService
             _udpListener = udpListener;
         }
 
-        public async Task Start(CancellationTokenSource tokenSource)
+        public async Task Start()
         {
-            _tokenSource = tokenSource;
+            _tokenSource = new CancellationTokenSource();
 
             var udpListenerTask = _udpListener.Listen(_tokenSource.Token);
 
             var requestsCleanerTask = _requestsCleaner.MoveOldRequestsToFailedRequests(_tokenSource.Token);
-            
+
             await Task.WhenAll(udpListenerTask, requestsCleanerTask);
         }
 

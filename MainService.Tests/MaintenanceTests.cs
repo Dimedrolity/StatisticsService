@@ -22,7 +22,7 @@ namespace MainService.Tests
         [Test]
         public void Start_ActivatesUdpListener()
         {
-            _maintenance.Start(new CancellationTokenSource());
+            _maintenance.Start();
 
             A.CallTo(() => _udpListener.Listen(A<CancellationToken>._))
                 .WithAnyArguments().MustHaveHappened(1, Times.Exactly);
@@ -31,7 +31,7 @@ namespace MainService.Tests
         [Test]
         public void Start_ActivatesOldRequestsCleaner()
         {
-            _maintenance.Start(new CancellationTokenSource());
+            _maintenance.Start();
 
             A.CallTo(() => _requestsCleaner.MoveOldRequestsToFailedRequests(A<CancellationToken>._))
                 .WithAnyArguments().MustHaveHappened(1, Times.Exactly);
@@ -40,11 +40,10 @@ namespace MainService.Tests
         [Test]
         public void Stop_CancelsToken()
         {
-            var tokenSource = new CancellationTokenSource();
-            _maintenance.Start(tokenSource);
+            _maintenance.Start();
             _maintenance.Stop();
 
-            Assert.IsTrue(tokenSource.IsCancellationRequested);
+            Assert.IsTrue(_maintenance.IsStopped);
         }
     }
 }
