@@ -13,7 +13,7 @@ namespace ServiceOne
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IUdpConfig, UdpConfig>();
-            services.AddSingleton<IRequestSender, UdpSender>();
+            services.AddSingleton<ISender, UdpSender>();
             services.AddControllers();
         }
 
@@ -24,6 +24,8 @@ namespace ServiceOne
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseCustomExceptionHandler();
 
             app.UseMetrics();
 

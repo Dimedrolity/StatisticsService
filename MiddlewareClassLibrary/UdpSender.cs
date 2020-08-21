@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace MiddlewareClassLibrary
 {
-    public class UdpSender : IRequestSender
+    public class UdpSender : ISender
     {
         private readonly string _host;
         private readonly int _port;
@@ -19,13 +19,19 @@ namespace MiddlewareClassLibrary
 
         public async Task SendStartedRequestAsync(Dictionary<string, string> content)
         {
-            content.Add("request-started-or-finished", "started");
+            content.Add("request-status", "started");
             await SendAsync(_port, content);
         }
 
         public async Task SendFinishedRequestAsync(Dictionary<string, string> content)
         {
-            content.Add("request-started-or-finished", "finished");
+            content.Add("request-status", "finished");
+            await SendAsync(_port, content);
+        }
+
+        public async Task SendFailedRequestAsync(Dictionary<string, string> content)
+        {
+            content.Add("request-status", "failed");
             await SendAsync(_port, content);
         }
 

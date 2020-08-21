@@ -16,11 +16,13 @@ namespace MainService
             services.AddSingleton<IRequestsStorage, RequestsStorage>();
             services.AddSingleton<IOldRequestsCleaner, OldRequestsCleaner>();
 
-            services.AddSingleton<Metric, UnfinishedRequestsCountMetric>();
+            services.AddSingleton<Metric, UnfinishedRequestsMetric>();
             services.AddSingleton<Metric, RequestsAverageTimeMetric>();
             services.AddSingleton<Metric, RequestsMinTimeMetric>();
             services.AddSingleton<Metric, RequestsMaxTimeMetric>();
             services.AddSingleton<Metric, RequestsMedianTimeMetric>();
+            services.AddSingleton<Metric, RequestsWithErrorsMetric>();
+            services.AddSingleton<Metric, LostUdpPacketsMetric>();
             services.AddSingleton<IMetricsProvider, MetricsProvider>();
 
             services.AddSingleton<IUdpConfig, UdpConfig>();

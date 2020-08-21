@@ -8,17 +8,17 @@ namespace MiddlewareClassLibrary
     internal class MetricsMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IRequestSender _requestSender;
+        private readonly ISender _sender;
 
-        public MetricsMiddleware(RequestDelegate next, IRequestSender requestSender)
+        public MetricsMiddleware(RequestDelegate next, ISender sender)
         {
             _next = next;
-            _requestSender = requestSender;
+            _sender = sender;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var requestGuid = Guid.NewGuid().ToString();
+            var requestGuid = (string) context.Items["guid"];
 
             var contentAboutStartedRequest = new Dictionary<string, string>
             {
@@ -27,7 +27,7 @@ namespace MiddlewareClassLibrary
                 {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
-            await _requestSender.SendStartedRequestAsync(contentAboutStartedRequest);
+            await _sender.SendStartedRequestAsync(contentAboutStartedRequest);
 
             await _next(context);
 
@@ -37,7 +37,7 @@ namespace MiddlewareClassLibrary
                 {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
-            await _requestSender.SendFinishedRequestAsync(contentAboutFinishedRequest);
+            await _sender.SendFinishedRequestAsync(contentAboutFinishedRequest);
         }
     }
 }

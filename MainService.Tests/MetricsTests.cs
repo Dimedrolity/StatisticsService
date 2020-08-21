@@ -25,7 +25,7 @@ namespace MainService.Tests
 
             A.CallTo(() => _storage.UnfinishedRequests).Returns(unfinishedRequests);
 
-            var metric = new UnfinishedRequestsCountMetric();
+            var metric = new UnfinishedRequestsMetric();
 
             var actual = metric.GetValue(_storage);
             var expected = _storage.UnfinishedRequests.Count.ToString();

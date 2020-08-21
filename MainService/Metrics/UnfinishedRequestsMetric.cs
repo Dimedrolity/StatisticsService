@@ -1,8 +1,8 @@
 ﻿namespace MainService.Metrics
 {
-    public class UnfinishedRequestsCountMetric : Metric
+    public class UnfinishedRequestsMetric : Metric
     {
-        public UnfinishedRequestsCountMetric() : base("unfinishedRequestsCount")
+        public UnfinishedRequestsMetric() : base("unfinishedRequestsCount")
         {
         }
 

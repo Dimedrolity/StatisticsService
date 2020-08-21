@@ -13,6 +13,7 @@ namespace MiddlewareClassLibrary
         private readonly RequestDelegate _next;
 
         private readonly ILogger<ExceptionHandlerMiddleware> _logger;
+        private readonly ISender _sender;
 
         private static readonly Dictionary<Type, HttpStatusCode>
             ExceptionTypeToStatusCode = new Dictionary<Type, HttpStatusCode>
@@ -21,14 +22,18 @@ namespace MiddlewareClassLibrary
                 {typeof(NullReferenceException), HttpStatusCode.InternalServerError}
             };
 
-        public ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
+        public ExceptionHandlerMiddleware(RequestDelegate next,
+            ILogger<ExceptionHandlerMiddleware> logger, ISender sender = null)
         {
             _next = next;
             _logger = logger;
+            _sender = sender;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
+            context.Items["guid"] = Guid.NewGuid().ToString();
+
             try
             {
                 await _next(context);
@@ -36,7 +41,13 @@ namespace MiddlewareClassLibrary
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
+
                 await WriteExceptionToResponseAsync(context, ex);
+
+                if (_sender != null)
+                {
+                    await SendExceptionToStatisticsServiceAsync(context);
+                }
             }
         }
 
@@ -70,6 +81,17 @@ namespace MiddlewareClassLibrary
                     return exception;
                 exception = exception.InnerException;
             }
+        }
+
+        private async Task SendExceptionToStatisticsServiceAsync(HttpContext context)
+        {
+            var contentAboutFailedRequest = new Dictionary<string, string>
+            {
+                {"guid", (string) context.Items["guid"]},
+                {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
+            };
+
+            await _sender.SendFailedRequestAsync(contentAboutFailedRequest);
         }
     }
 }

@@ -7,15 +7,15 @@ namespace MainService
     {
         public ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
         public ConcurrentDictionary<string, FinishedRequest> FinishedRequests { get; }
-        public ConcurrentBag<FailedRequest> FailedUdpRequests { get; }
-        public ConcurrentBag<FailedRequest> FailedHttpRequests { get; }
+        public ConcurrentBag<FailedRequest> LostUdpPackets { get; }
+        public ConcurrentBag<FailedRequest> RequestsWithErrors { get; }
 
         public RequestsStorage()
         {
             UnfinishedRequests = new ConcurrentDictionary<string, UnfinishedRequest>();
             FinishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
-            FailedUdpRequests = new ConcurrentBag<FailedRequest>();
-            FailedHttpRequests = new ConcurrentBag<FailedRequest>();
+            LostUdpPackets = new ConcurrentBag<FailedRequest>();
+            RequestsWithErrors = new ConcurrentBag<FailedRequest>();
         }
 
         public void SaveStartedRequest(string guid, string method, string url, long startTime)
@@ -39,8 +39,17 @@ namespace MainService
             else if (!UnfinishedRequests.ContainsKey(guid) && !FinishedRequests.ContainsKey(guid))
             {
                 var unknownFailedRequest = new FailedRequest("no method", "no url", finish);
-                FailedUdpRequests.Add(unknownFailedRequest);
+                LostUdpPackets.Add(unknownFailedRequest);
             }
+        }
+
+        public void SaveFailedHttpRequest(string guid, long failTime)
+        {
+            if (!UnfinishedRequests.TryRemove(guid, out var startedRequest)) 
+                return;
+            
+            var request = new FailedRequest(startedRequest.Method, startedRequest.Url, failTime);
+            RequestsWithErrors.Add(request);
         }
     }
 }

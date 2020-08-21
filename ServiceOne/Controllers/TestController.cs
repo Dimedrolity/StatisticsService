@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,12 @@ namespace ServiceOne.Controllers
             var client = new HttpClient();
             var response = await client.GetStringAsync("http://localhost:7002/api/get2");
             return $"ServiceOne and {response}";
+        }
+        
+        [HttpGet("error")]
+        public string Error()
+        {
+            throw new ApplicationException("exxx");
         }
     }
 }

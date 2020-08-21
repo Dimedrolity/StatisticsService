@@ -34,13 +34,16 @@ namespace MainService.Controllers
             {
                 var content = await ReceiveContentAsync(listener, token);
 
-                switch (content["request-started-or-finished"])
+                switch (content["request-status"])
                 {
                     case "started":
                         await ParseContentAndSaveStartedRequestAsync(content);
                         break;
                     case "finished":
                         await ParseContentAndSaveFinishedRequestAsync(content);
+                        break;
+                    case "failed":
+                        await ParseContentAndSaveFailedRequestAsync(content);
                         break;
                 }
             }
@@ -65,12 +68,12 @@ namespace MainService.Controllers
             var path = content["path"];
             var method = content["method"];
             var startTime = content["time-as-milliseconds-from-unix-epoch"];
-            var url = $"{host}/{path}";
+            var url = $"{host}{path}";
 
             await Task.Run(
                 () => _requestsStorage.SaveStartedRequest(guid, method, url, long.Parse(startTime)));
 
-            _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}/{path}\n" +
+            _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}{path}\n" +
                                    $"время начала запроса: {startTime}");
         }
 
@@ -83,6 +86,17 @@ namespace MainService.Controllers
 
             _logger.LogInformation($"выполнился запрос: {guid}\n" +
                                    $"время окончания запроса: {finishTime}");
+        }
+
+        private async Task ParseContentAndSaveFailedRequestAsync(IReadOnlyDictionary<string, string> content)
+        {
+            var guid = content["guid"];
+            var failTime = content["time-as-milliseconds-from-unix-epoch"];
+
+            await Task.Run(() => { _requestsStorage.SaveFailedHttpRequest(guid, long.Parse(failTime)); });
+
+            _logger.LogInformation($"запрос завершился с ошибкой {guid}\n" +
+                                   $"время ошибки: {failTime}");
         }
     }
 }

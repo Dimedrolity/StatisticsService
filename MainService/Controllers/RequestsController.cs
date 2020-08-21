@@ -32,11 +32,11 @@ namespace MainService.Controllers
             var path = Request.Form["path"];
             var method = Request.Form["method"];
             var startTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
-            var url = $"{host}/{path}";
+            var url = $"{host}{path}";
 
             await Task.Run(() => { _requestsStorage.SaveStartedRequest(guid, method, url, long.Parse(startTime)); });
 
-            _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}/{path}\n" +
+            _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}{path}\n" +
                                    $"время начала запроса: {startTime}");
 
             return Ok();
@@ -54,6 +54,22 @@ namespace MainService.Controllers
 
             _logger.LogInformation($"выполнился запрос: {guid}\n" +
                                    $"время окончания запроса: {finishTime}");
+
+            return Ok();
+        }
+
+        [HttpPost("request-failed")]
+        public async Task<IActionResult> RequestFailed()
+        {
+            if (_maintenance.IsStopped) return StatusCode(403, ErrorMessage);
+
+            var guid = Request.Form["guid"];
+            var failTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
+
+            await Task.Run(() => { _requestsStorage.SaveFailedHttpRequest(guid, long.Parse(failTime)); });
+
+            _logger.LogInformation($"запрос завершился с ошибкой {guid}\n" +
+                                   $"время ошибки: {failTime}");
 
             return Ok();
         }
