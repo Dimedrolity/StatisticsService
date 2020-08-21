@@ -5,6 +5,6 @@ namespace MainService.Controllers
 {
     public interface IUdpListener
     {
-        Task Listen(CancellationToken token);
+        Task ListenAsync(CancellationToken token);
     }
 }

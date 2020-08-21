@@ -11,17 +11,17 @@ namespace MainService.ExternalMiddleware
         private readonly string _urlForStartedRequest = "http://localhost:7000/api/requests/request-started";
         private readonly string _urlForFinishedRequest = "http://localhost:7000/api/requests/request-finished";
 
-        public async Task SendStartedRequest(Dictionary<string, string> content)
+        public async Task SendStartedRequestAsync(Dictionary<string, string> content)
         {
-            await Send(_urlForStartedRequest, content);
+            await SendAsync(_urlForStartedRequest, content);
         }
 
-        public async Task SendFinishedRequest(Dictionary<string, string> content)
+        public async Task SendFinishedRequestAsync(Dictionary<string, string> content)
         {
-            await Send(_urlForFinishedRequest, content);
+            await SendAsync(_urlForFinishedRequest, content);
         }
 
-        private async Task Send(string url, Dictionary<string, string> content)
+        private async Task SendAsync(string url, Dictionary<string, string> content)
         {
             await _client.PostAsync(url, new FormUrlEncodedContent(content));
         }

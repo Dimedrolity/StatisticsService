@@ -17,19 +17,19 @@ namespace MainService.ExternalMiddleware
             _port = config.GetPort();
         }
 
-        public async Task SendStartedRequest(Dictionary<string, string> content)
+        public async Task SendStartedRequestAsync(Dictionary<string, string> content)
         {
             content.Add("request-started-or-finished", "started");
-            await Send(_port, content);
+            await SendAsync(_port, content);
         }
 
-        public async Task SendFinishedRequest(Dictionary<string, string> content)
+        public async Task SendFinishedRequestAsync(Dictionary<string, string> content)
         {
             content.Add("request-started-or-finished", "finished");
-            await Send(_port, content);
+            await SendAsync(_port, content);
         }
 
-        private async Task Send(int port, Dictionary<string, string> content)
+        private async Task SendAsync(int port, Dictionary<string, string> content)
         {
             using var sender = new UdpClient(_host, port);
 

@@ -27,7 +27,7 @@ namespace MainService.ExternalMiddleware
                 {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
-            await _requestSender.SendStartedRequest(contentAboutStartedRequest);
+            await _requestSender.SendStartedRequestAsync(contentAboutStartedRequest);
 
             await _next(context);
 
@@ -37,7 +37,7 @@ namespace MainService.ExternalMiddleware
                 {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
-            await _requestSender.SendFinishedRequest(contentAboutFinishedRequest);
+            await _requestSender.SendFinishedRequestAsync(contentAboutFinishedRequest);
         }
     }
 }

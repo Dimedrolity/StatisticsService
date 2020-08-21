@@ -5,7 +5,7 @@ namespace MainService.ExternalMiddleware
 {
     public interface IRequestSender
     {
-        Task SendStartedRequest(Dictionary<string, string> content);
-        Task SendFinishedRequest(Dictionary<string, string> content);
+        Task SendStartedRequestAsync(Dictionary<string, string> content);
+        Task SendFinishedRequestAsync(Dictionary<string, string> content);
     }
 }

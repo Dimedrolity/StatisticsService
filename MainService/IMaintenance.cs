@@ -4,7 +4,7 @@ namespace MainService
 {
     public interface IMaintenance
     {
-        Task Start();
+        Task StartAsync();
 
         void Stop();
 

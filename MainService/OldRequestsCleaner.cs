@@ -17,7 +17,7 @@ namespace MainService
             _storage = storage;
         }
 
-        public async Task MoveOldRequestsToFailedRequests(CancellationToken token)
+        public async Task MoveOldRequestsToFailedRequestsAsync(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {

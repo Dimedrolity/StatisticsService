@@ -5,6 +5,6 @@ namespace MainService
 {
     public interface IOldRequestsCleaner
     {
-        Task MoveOldRequestsToFailedRequests(CancellationToken token);
+        Task MoveOldRequestsToFailedRequestsAsync(CancellationToken token);
     }
 }

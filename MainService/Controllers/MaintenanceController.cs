@@ -17,7 +17,7 @@ namespace MainService.Controllers
         [HttpGet("start")]
         public IActionResult Start()
         {
-            _maintenance.Start();
+            _maintenance.StartAsync();
             return Ok("service started");
         }
 

@@ -26,27 +26,27 @@ namespace MainService.Controllers
             _logger = logger;
         }
 
-        public async Task Listen(CancellationToken token)
+        public async Task ListenAsync(CancellationToken token)
         {
             using var listener = new UdpClient(_port);
 
             while (!token.IsCancellationRequested)
             {
-                var content = await ReceiveContent(listener, token);
+                var content = await ReceiveContentAsync(listener, token);
 
                 switch (content["request-started-or-finished"])
                 {
                     case "started":
-                        await ParseContentAndSaveStartedRequest(content);
+                        await ParseContentAndSaveStartedRequestAsync(content);
                         break;
                     case "finished":
-                        await ParseContentAndSaveFinishedRequest(content);
+                        await ParseContentAndSaveFinishedRequestAsync(content);
                         break;
                 }
             }
         }
 
-        private static async Task<Dictionary<string, string>> ReceiveContent(UdpClient receiver,
+        private static async Task<Dictionary<string, string>> ReceiveContentAsync(UdpClient receiver,
             CancellationToken token)
         {
             var data = await receiver.ReceiveAsync();
@@ -58,7 +58,7 @@ namespace MainService.Controllers
             return content;
         }
 
-        private async Task ParseContentAndSaveStartedRequest(IReadOnlyDictionary<string, string> content)
+        private async Task ParseContentAndSaveStartedRequestAsync(IReadOnlyDictionary<string, string> content)
         {
             var guid = content["guid"];
             var host = content["host"];
@@ -74,7 +74,7 @@ namespace MainService.Controllers
                                    $"время начала запроса: {startTime}");
         }
 
-        private async Task ParseContentAndSaveFinishedRequest(IReadOnlyDictionary<string, string> content)
+        private async Task ParseContentAndSaveFinishedRequestAsync(IReadOnlyDictionary<string, string> content)
         {
             var guid = content["guid"];
             var finishTime = content["time-as-milliseconds-from-unix-epoch"];

@@ -22,25 +22,25 @@ namespace MainService.Tests
         [Test]
         public void Start_ActivatesUdpListener()
         {
-            _maintenance.Start();
+            _maintenance.StartAsync();
 
-            A.CallTo(() => _udpListener.Listen(A<CancellationToken>._))
+            A.CallTo(() => _udpListener.ListenAsync(A<CancellationToken>._))
                 .WithAnyArguments().MustHaveHappened(1, Times.Exactly);
         }
 
         [Test]
         public void Start_ActivatesOldRequestsCleaner()
         {
-            _maintenance.Start();
+            _maintenance.StartAsync();
 
-            A.CallTo(() => _requestsCleaner.MoveOldRequestsToFailedRequests(A<CancellationToken>._))
+            A.CallTo(() => _requestsCleaner.MoveOldRequestsToFailedRequestsAsync(A<CancellationToken>._))
                 .WithAnyArguments().MustHaveHappened(1, Times.Exactly);
         }
 
         [Test]
         public void Stop_CancelsToken()
         {
-            _maintenance.Start();
+            _maintenance.StartAsync();
             _maintenance.Stop();
 
             Assert.IsTrue(_maintenance.IsStopped);
