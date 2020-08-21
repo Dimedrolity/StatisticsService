@@ -1,8 +1,8 @@
-using MainService.ExternalMiddleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MiddlewareClassLibrary;
 
 namespace ServiceOne
 {
@@ -26,13 +26,10 @@ namespace ServiceOne
             }
 
             app.UseMetrics();
-            
+
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

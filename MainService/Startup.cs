@@ -1,10 +1,9 @@
 using MainService.Controllers;
-using MainService.ExternalMiddleware;
-using MainService.InternalMiddleware;
 using MainService.Metrics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using MiddlewareClassLibrary;
 
 namespace MainService
 {

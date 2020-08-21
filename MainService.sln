@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceTwo", "ServiceTwo\Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainService.Tests", "MainService.Tests\MainService.Tests.csproj", "{78C20979-577A-48E5-9361-FF335C1F3A6B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiddlewareClassLibrary", "MiddlewareClassLibrary\MiddlewareClassLibrary.csproj", "{542E6CB3-3815-4CD3-8E0E-57CC9E33DC78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{78C20979-577A-48E5-9361-FF335C1F3A6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78C20979-577A-48E5-9361-FF335C1F3A6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78C20979-577A-48E5-9361-FF335C1F3A6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{542E6CB3-3815-4CD3-8E0E-57CC9E33DC78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{542E6CB3-3815-4CD3-8E0E-57CC9E33DC78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{542E6CB3-3815-4CD3-8E0E-57CC9E33DC78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{542E6CB3-3815-4CD3-8E0E-57CC9E33DC78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

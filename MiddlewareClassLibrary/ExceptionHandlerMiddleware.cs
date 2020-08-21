@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using MainService.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace MainService.InternalMiddleware
+namespace MiddlewareClassLibrary
 {
-    public class ExceptionHandlerMiddleware
+    internal class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
 
-        private readonly IRequestsStorage _storage;
         private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
         private static readonly Dictionary<Type, HttpStatusCode>
@@ -23,11 +21,9 @@ namespace MainService.InternalMiddleware
                 {typeof(NullReferenceException), HttpStatusCode.InternalServerError}
             };
 
-        public ExceptionHandlerMiddleware(RequestDelegate next, IRequestsStorage storage,
-            ILogger<ExceptionHandlerMiddleware> logger)
+        public ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
         {
             _next = next;
-            _storage = storage;
             _logger = logger;
         }
 
@@ -40,18 +36,8 @@ namespace MainService.InternalMiddleware
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
-                AddFailedRequestToStorage(context);
                 await WriteExceptionToResponseAsync(context, ex);
             }
-        }
-
-        private void AddFailedRequestToStorage(HttpContext context)
-        {
-            var method = context.Request.Method;
-            var url = $"{context.Request.Host}/{context.Request.Path}";
-            var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-            _storage.FailedHttpRequests.Add(new FailedRequest(method, url, now));
         }
 
         private async Task WriteExceptionToResponseAsync(HttpContext context, Exception exception)

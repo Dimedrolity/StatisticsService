@@ -3,8 +3,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MainService.ExternalMiddleware;
 using Microsoft.Extensions.Logging;
+using MiddlewareClassLibrary;
 using Newtonsoft.Json;
 
 namespace MainService.Controllers

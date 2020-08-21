@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MainService.ExternalMiddleware
+namespace MiddlewareClassLibrary
 {
     public interface IRequestSender
     {

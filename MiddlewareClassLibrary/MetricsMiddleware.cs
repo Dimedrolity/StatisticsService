@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace MainService.ExternalMiddleware
+namespace MiddlewareClassLibrary
 {
-    public class MetricsMiddleware
+    internal class MetricsMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IRequestSender _requestSender;
