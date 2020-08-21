@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MainService.Controllers
@@ -27,6 +26,19 @@ namespace MainService.Controllers
         {
             _maintenance.Stop();
             return Ok("service stopped");
+        }
+
+        [HttpGet("error")]
+        public IActionResult Error()
+        {
+            try
+            {
+                throw new ArgumentException("first");
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException("second", e);
+            }
         }
     }
 }

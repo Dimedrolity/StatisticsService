@@ -12,6 +12,8 @@ namespace MainService.Controllers
         private readonly IRequestsStorage _requestsStorage;
         private readonly ILogger<RequestsController> _logger;
 
+        private static string ErrorMessage = "Сервис статистики остановлен";
+
         public RequestsController(IMaintenance maintenance, IRequestsStorage requestsStorage,
             ILogger<RequestsController> logger)
         {
@@ -23,7 +25,7 @@ namespace MainService.Controllers
         [HttpPost("request-started")]
         public async Task<IActionResult> RequestStarted()
         {
-            if (_maintenance.IsStopped) return StatusCode(403);
+            if (_maintenance.IsStopped) return StatusCode(403, ErrorMessage);
 
             var guid = Request.Form["guid"];
             var host = Request.Form["host"];
@@ -43,7 +45,7 @@ namespace MainService.Controllers
         [HttpPost("request-finished")]
         public async Task<IActionResult> RequestFinished()
         {
-            if (_maintenance.IsStopped) return StatusCode(403);
+            if (_maintenance.IsStopped) return StatusCode(403, ErrorMessage);
 
             var guid = Request.Form["guid"];
             var finishTime = Request.Form["time-as-milliseconds-from-unix-epoch"];

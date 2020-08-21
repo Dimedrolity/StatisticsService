@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace MainService.Middleware
+namespace MainService.ExternalMiddleware
 {
     public class HttpSender : IRequestSender
     {

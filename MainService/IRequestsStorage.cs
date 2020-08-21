@@ -7,7 +7,8 @@ namespace MainService
     {
         ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
         ConcurrentDictionary<string, FinishedRequest> FinishedRequests { get; }
-        ConcurrentBag<FailedRequest> FailedRequests { get; }
+        ConcurrentBag<FailedRequest> FailedUdpRequests { get; }
+        ConcurrentBag<FailedRequest> FailedHttpRequests { get; }
 
         void SaveStartedRequest(string guid, string method, string url, long startTime);
         void SaveFinishedRequest(string guid, long finishTime);

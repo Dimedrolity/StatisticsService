@@ -33,7 +33,7 @@ namespace MainService
 
                     var failedRequest = new FailedRequest(
                         oldRequest.Method, oldRequest.Url, oldRequest.StartTimeInMilliseconds);
-                    _storage.FailedRequests.Add(failedRequest);
+                    _storage.FailedUdpRequests.Add(failedRequest);
                 }
 
                 await Task.Delay(_frequencyOfFinishingOldRequests, token);

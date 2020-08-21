@@ -7,13 +7,15 @@ namespace MainService
     {
         public ConcurrentDictionary<string, UnfinishedRequest> UnfinishedRequests { get; }
         public ConcurrentDictionary<string, FinishedRequest> FinishedRequests { get; }
-        public ConcurrentBag<FailedRequest> FailedRequests { get; }
+        public ConcurrentBag<FailedRequest> FailedUdpRequests { get; }
+        public ConcurrentBag<FailedRequest> FailedHttpRequests { get; }
 
         public RequestsStorage()
         {
             UnfinishedRequests = new ConcurrentDictionary<string, UnfinishedRequest>();
             FinishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
-            FailedRequests = new ConcurrentBag<FailedRequest>();
+            FailedUdpRequests = new ConcurrentBag<FailedRequest>();
+            FailedHttpRequests = new ConcurrentBag<FailedRequest>();
         }
 
         public void SaveStartedRequest(string guid, string method, string url, long startTime)
@@ -37,7 +39,7 @@ namespace MainService
             else if (!UnfinishedRequests.ContainsKey(guid) && !FinishedRequests.ContainsKey(guid))
             {
                 var unknownFailedRequest = new FailedRequest("no method", "no url", finish);
-                FailedRequests.Add(unknownFailedRequest);
+                FailedUdpRequests.Add(unknownFailedRequest);
             }
         }
     }

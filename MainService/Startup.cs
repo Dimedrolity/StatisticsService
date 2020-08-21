@@ -1,6 +1,7 @@
 using MainService.Controllers;
+using MainService.ExternalMiddleware;
+using MainService.InternalMiddleware;
 using MainService.Metrics;
-using MainService.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ namespace MainService
 
             services.AddSingleton<IUdpConfig, UdpConfig>();
             services.AddSingleton<IUdpListener, UdpListener>();
-            
+
             services.AddSingleton<IMaintenance, Maintenance>();
 
             services.AddControllers();
@@ -34,6 +35,8 @@ namespace MainService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCustomExceptionHandler();
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

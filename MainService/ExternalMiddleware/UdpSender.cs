@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace MainService.Middleware
+namespace MainService.ExternalMiddleware
 {
     public class UdpSender : IRequestSender
     {

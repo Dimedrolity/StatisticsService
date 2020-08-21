@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace MainService.Middleware
+namespace MainService.ExternalMiddleware
 {
     public class UdpConfig : IUdpConfig
     {

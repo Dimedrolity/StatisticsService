@@ -1,4 +1,4 @@
-﻿namespace MainService.Middleware
+﻿namespace MainService.ExternalMiddleware
 {
     public interface IUdpConfig
     {

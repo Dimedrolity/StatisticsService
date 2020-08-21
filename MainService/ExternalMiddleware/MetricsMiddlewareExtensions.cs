@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 
-namespace MainService.Middleware
+namespace MainService.ExternalMiddleware
 {
     public static class MetricsMiddlewareExtensions
     {
