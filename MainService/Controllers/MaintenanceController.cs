@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace MainService.Controllers
 {
@@ -13,32 +12,19 @@ namespace MainService.Controllers
         {
             _maintenance = maintenance;
         }
-
+        
         [HttpGet("start")]
         public IActionResult Start()
         {
             _maintenance.StartAsync();
             return Ok("service started");
         }
-
+        
         [HttpGet("stop")]
         public IActionResult Stop()
         {
             _maintenance.Stop();
             return Ok("service stopped");
-        }
-
-        [HttpGet("error")]
-        public IActionResult Error()
-        {
-            try
-            {
-                throw new ArgumentException("first");
-            }
-            catch (Exception e)
-            {
-                throw new ApplicationException("second", e);
-            }
         }
     }
 }

@@ -31,6 +31,7 @@ namespace MainService
             services.AddSingleton<IMaintenance, Maintenance>();
 
             services.AddControllers();
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +39,14 @@ namespace MainService
         {
             app.UseCustomExceptionHandler();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+                {
+                    c.RoutePrefix = string.Empty;
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Statistics service API");
+                }
+            );
+            
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
