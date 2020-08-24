@@ -22,6 +22,9 @@ namespace MainService.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Добавление информации о начавшемся HTTP-запросе
+        /// </summary>
         [HttpPost("request-started")]
         public async Task<IActionResult> RequestStarted()
         {
@@ -42,6 +45,9 @@ namespace MainService.Controllers
             return Ok();
         }
         
+        /// <summary>
+        /// Добавление информации о HTTP-запросе, который завершился успешно
+        /// </summary>
         [HttpPost("request-finished")]
         public async Task<IActionResult> RequestFinished()
         {
@@ -58,6 +64,9 @@ namespace MainService.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Добавление информации о HTTP-запросе, который завершился с ошибкой
+        /// </summary>
         [HttpPost("request-failed")]
         public async Task<IActionResult> RequestFailed()
         {

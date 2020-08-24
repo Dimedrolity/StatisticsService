@@ -18,6 +18,9 @@ namespace MainService.Controllers
             _metricsProvider = metricsProvider;
         }
 
+        /// <summary>
+        /// Получение всех метрик сервиса статистики
+        /// </summary>
         [HttpGet("get-all")]
         public async Task<string> GetAllMetrics()
         {

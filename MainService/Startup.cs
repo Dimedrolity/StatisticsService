@@ -1,8 +1,10 @@
+using System.IO;
 using MainService.Controllers;
 using MainService.Metrics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using MiddlewareClassLibrary;
 
 namespace MainService
@@ -31,7 +33,19 @@ namespace MainService
             services.AddSingleton<IMaintenance, Maintenance>();
 
             services.AddControllers();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1",
+                    new OpenApiInfo
+                    {
+                        Title = "Statistics service API",
+                        Version = "v1"
+                    }
+                );
+
+                var filePath = Path.Combine(System.AppContext.BaseDirectory, "StatisticsServiceAPI.xml");
+                c.IncludeXmlComments(filePath);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +60,7 @@ namespace MainService
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Statistics service API");
                 }
             );
-            
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });

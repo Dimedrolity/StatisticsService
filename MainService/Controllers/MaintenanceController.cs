@@ -13,6 +13,9 @@ namespace MainService.Controllers
             _maintenance = maintenance;
         }
         
+        /// <summary>
+        /// Запуск сервиса статистики
+        /// </summary>
         [HttpGet("start")]
         public IActionResult Start()
         {
@@ -20,6 +23,9 @@ namespace MainService.Controllers
             return Ok("service started");
         }
         
+        /// <summary>
+        /// Выключение сервиса статистики
+        /// </summary>
         [HttpGet("stop")]
         public IActionResult Stop()
         {
