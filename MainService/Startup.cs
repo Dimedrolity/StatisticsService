@@ -19,6 +19,7 @@ namespace MainService
             services.AddSingleton<IOldRequestsCleaner, OldRequestsCleaner>();
 
             services.AddSingleton<Metric, UnfinishedRequestsMetric>();
+            services.AddSingleton<Metric, FinishedRequestsMetric>();
             services.AddSingleton<Metric, RequestsAverageTimeMetric>();
             services.AddSingleton<Metric, RequestsMinTimeMetric>();
             services.AddSingleton<Metric, RequestsMaxTimeMetric>();

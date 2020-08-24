@@ -17,7 +17,7 @@ namespace MainService.Tests
         }
 
         [Test]
-        public void UnfinishedRequestsCountMetric_IsCorrect()
+        public void UnfinishedRequestsMetric_IsCorrect()
         {
             var unfinishedRequests = new ConcurrentDictionary<string, UnfinishedRequest>();
             unfinishedRequests.TryAdd("123", new UnfinishedRequest("method", "url", 0));
@@ -29,6 +29,42 @@ namespace MainService.Tests
 
             var actual = metric.GetValue(_storage);
             var expected = _storage.UnfinishedRequests.Count.ToString();
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void FinishedRequestsCountMetric_IsCorrect()
+        {
+            var unfinishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
+            unfinishedRequests.TryAdd("123", new FinishedRequest("method", "url", 0));
+            unfinishedRequests.TryAdd("456", new FinishedRequest("method", "url2", 0));
+
+            A.CallTo(() => _storage.FinishedRequests).Returns(unfinishedRequests);
+
+            var metric = new FinishedRequestsMetric();
+
+            var actual = metric.GetValue(_storage);
+            var expected = _storage.FinishedRequests.Count.ToString();
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void RequestsWithErrorsMetric_IsCorrect()
+        {
+            var unfinishedRequests = new ConcurrentBag<FailedRequest>
+            {
+                new FailedRequest("method", "url", 0),
+                new FailedRequest("method", "url2", 0)
+            };
+
+            A.CallTo(() => _storage.RequestsWithErrors).Returns(unfinishedRequests);
+
+            var metric = new RequestsWithErrorsMetric();
+
+            var actual = metric.GetValue(_storage);
+            var expected = _storage.RequestsWithErrors.Count.ToString();
 
             Assert.AreEqual(expected, actual);
         }
