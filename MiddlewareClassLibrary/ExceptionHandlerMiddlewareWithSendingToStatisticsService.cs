@@ -46,7 +46,7 @@ namespace MiddlewareClassLibrary
             var contentAboutFailedRequest = new Dictionary<string, string>
             {
                 {"guid", (string) context.Items["guid"]},
-                {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
+                {"fail-time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
             await _sender.SendFailedRequestAsync(contentAboutFailedRequest);

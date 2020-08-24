@@ -24,7 +24,7 @@ namespace MiddlewareClassLibrary
             {
                 {"guid", requestGuid}, {"host", context.Request.Host.Value},
                 {"path", context.Request.Path.Value}, {"method", context.Request.Method},
-                {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
+                {"start-time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
             await _sender.SendStartedRequestAsync(contentAboutStartedRequest);
@@ -34,7 +34,7 @@ namespace MiddlewareClassLibrary
             var contentAboutFinishedRequest = new Dictionary<string, string>
             {
                 {"guid", requestGuid},
-                {"time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
+                {"finish-time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
             await _sender.SendFinishedRequestAsync(contentAboutFinishedRequest);

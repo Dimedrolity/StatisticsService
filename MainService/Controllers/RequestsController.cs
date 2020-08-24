@@ -26,15 +26,16 @@ namespace MainService.Controllers
         /// Добавление информации о начавшемся HTTP-запросе
         /// </summary>
         [HttpPost("request-started")]
-        public async Task<IActionResult> RequestStarted()
+        public async Task<IActionResult> RequestStarted(
+            [FromForm(Name = "guid")] string guid,
+            [FromForm(Name = "host")] string host,
+            [FromForm(Name = "path")] string path,
+            [FromForm(Name = "method")] string method,
+            [FromForm(Name = "start-time-as-milliseconds-from-unix-epoch")]
+            string startTime)
         {
             if (_maintenance.IsStopped) return StatusCode(403, ErrorMessage);
 
-            var guid = Request.Form["guid"];
-            var host = Request.Form["host"];
-            var path = Request.Form["path"];
-            var method = Request.Form["method"];
-            var startTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
             var url = $"{host}{path}";
 
             await Task.Run(() => { _requestsStorage.SaveStartedRequest(guid, method, url, long.Parse(startTime)); });
@@ -44,17 +45,17 @@ namespace MainService.Controllers
 
             return Ok();
         }
-        
+
         /// <summary>
         /// Добавление информации о HTTP-запросе, который завершился успешно
         /// </summary>
         [HttpPost("request-finished")]
-        public async Task<IActionResult> RequestFinished()
+        public async Task<IActionResult> RequestFinished(
+            [FromForm(Name = "guid")] string guid,
+            [FromForm(Name = "finish-time-as-milliseconds-from-unix-epoch")]
+            string finishTime)
         {
             if (_maintenance.IsStopped) return StatusCode(403, ErrorMessage);
-
-            var guid = Request.Form["guid"];
-            var finishTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
 
             await Task.Run(() => { _requestsStorage.SaveFinishedRequest(guid, long.Parse(finishTime)); });
 
@@ -68,12 +69,12 @@ namespace MainService.Controllers
         /// Добавление информации о HTTP-запросе, который завершился с ошибкой
         /// </summary>
         [HttpPost("request-failed")]
-        public async Task<IActionResult> RequestFailed()
+        public async Task<IActionResult> RequestFailed(
+            [FromForm(Name = "guid")] string guid,
+            [FromForm(Name = "fail-time-as-milliseconds-from-unix-epoch")]
+            string failTime)
         {
             if (_maintenance.IsStopped) return StatusCode(403, ErrorMessage);
-
-            var guid = Request.Form["guid"];
-            var failTime = Request.Form["time-as-milliseconds-from-unix-epoch"];
 
             await Task.Run(() => { _requestsStorage.SaveFailedHttpRequest(guid, long.Parse(failTime)); });
 

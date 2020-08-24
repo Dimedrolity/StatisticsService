@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using MiddlewareClassLibrary;
 using Newtonsoft.Json;
 
 namespace MainService.Controllers
@@ -67,7 +66,7 @@ namespace MainService.Controllers
             var host = content["host"];
             var path = content["path"];
             var method = content["method"];
-            var startTime = content["time-as-milliseconds-from-unix-epoch"];
+            var startTime = content["start-time-as-milliseconds-from-unix-epoch"];
             var url = $"{host}{path}";
 
             await Task.Run(
@@ -80,7 +79,7 @@ namespace MainService.Controllers
         private async Task ParseContentAndSaveFinishedRequestAsync(IReadOnlyDictionary<string, string> content)
         {
             var guid = content["guid"];
-            var finishTime = content["time-as-milliseconds-from-unix-epoch"];
+            var finishTime = content["finish-time-as-milliseconds-from-unix-epoch"];
 
             await Task.Run(() => _requestsStorage.SaveFinishedRequest(guid, long.Parse(finishTime)));
 
@@ -91,7 +90,7 @@ namespace MainService.Controllers
         private async Task ParseContentAndSaveFailedRequestAsync(IReadOnlyDictionary<string, string> content)
         {
             var guid = content["guid"];
-            var failTime = content["time-as-milliseconds-from-unix-epoch"];
+            var failTime = content["fail-time-as-milliseconds-from-unix-epoch"];
 
             await Task.Run(() => { _requestsStorage.SaveFailedHttpRequest(guid, long.Parse(failTime)); });
 
