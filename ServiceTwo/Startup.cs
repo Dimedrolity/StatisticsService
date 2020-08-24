@@ -25,6 +25,8 @@ namespace ServiceTwo
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCustomExceptionHandlerWithSendingToStatisticsService();
+
             app.UseMetrics();
 
             app.UseRouting();

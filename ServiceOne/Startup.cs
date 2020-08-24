@@ -25,7 +25,7 @@ namespace ServiceOne
                 app.UseDeveloperExceptionPage();
             }
             
-            app.UseCustomExceptionHandler();
+            app.UseCustomExceptionHandlerWithSendingToStatisticsService();
 
             app.UseMetrics();
 

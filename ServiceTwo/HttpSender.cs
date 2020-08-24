@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using MiddlewareClassLibrary;
 
-namespace MiddlewareClassLibrary
+namespace ServiceTwo
 {
     public class HttpSender : ISender
     {

@@ -1,4 +1,4 @@
-﻿namespace MiddlewareClassLibrary
+﻿namespace ServiceOne
 {
     public interface IUdpConfig
     {

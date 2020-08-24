@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace MiddlewareClassLibrary
+namespace MainService
 {
     public class UdpConfig : IUdpConfig
     {
@@ -9,11 +9,6 @@ namespace MiddlewareClassLibrary
         public UdpConfig(IConfiguration configuration)
         {
             _configuration = configuration;
-        }
-
-        public string GetHost()
-        {
-            return _configuration["UdpHost"];
         }
 
         public int GetPort()

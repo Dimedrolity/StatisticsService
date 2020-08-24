@@ -2,9 +2,10 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using MiddlewareClassLibrary;
 using Newtonsoft.Json;
 
-namespace MiddlewareClassLibrary
+namespace ServiceOne
 {
     public class UdpSender : ISender
     {
