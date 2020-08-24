@@ -9,9 +9,23 @@ namespace ServiceTwo
     {
         private readonly HttpClient _client = new HttpClient();
 
-        private readonly string _urlForStartedRequest = "http://localhost:7000/api/requests/request-started";
-        private readonly string _urlForFinishedRequest = "http://localhost:7000/api/requests/request-finished";
-        private readonly string _urlForFailedRequest = "http://localhost:7000/api/requests/request-failed";
+        private readonly string _urlForStartedRequest;
+        private readonly string _urlForFinishedRequest;
+        private readonly string _urlForFailedRequest;
+
+        public HttpSender(IHttpConfig config)
+        {
+            var host = config.GetHostOfStatisticsService();
+
+            var pathForStartedRequest = config.GetPathForStartedRequest();
+            _urlForStartedRequest = $"{host}/{pathForStartedRequest}";
+
+            var pathForFinishedRequest = config.GetPathForFinishedRequest();
+            _urlForFinishedRequest = $"{host}/{pathForFinishedRequest}";
+
+            var pathForFailedRequest = config.GetPathForFailedRequest();
+            _urlForFailedRequest = $"{host}/{pathForFailedRequest}";
+        }
 
         public async Task SendStartedRequestAsync(Dictionary<string, string> content)
         {

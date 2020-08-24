@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MiddlewareClassLibrary;
 
-
 namespace ServiceTwo
 {
     public class Startup
@@ -13,6 +12,7 @@ namespace ServiceTwo
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IHttpConfig, HttpConfig>();
             services.AddSingleton<ISender, HttpSender>();
             services.AddControllers();
         }
