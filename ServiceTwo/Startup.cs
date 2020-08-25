@@ -13,7 +13,7 @@ namespace ServiceTwo
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IHttpConfig, HttpConfig>();
-            services.AddSingleton<ISender, HttpSender>();
+            services.AddSingleton<IRequestSender, HttpRequestSender>();
             services.AddControllers();
         }
 

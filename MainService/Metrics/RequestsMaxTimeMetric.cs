@@ -4,9 +4,7 @@ namespace MainService.Metrics
 {
     public class RequestsMaxTimeMetric : Metric
     {
-        public RequestsMaxTimeMetric() : base("requestsMaxTime")
-        {
-        }
+        public override string Name { get; } = "requestsMaxTime";
 
         public override string GetValue(IRequestsStorage storage)
         {

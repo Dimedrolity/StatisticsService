@@ -2,9 +2,7 @@
 {
     public class LostUdpPacketsMetric : Metric
     {
-        public LostUdpPacketsMetric() : base("lostUdpPacketsCount")
-        {
-        }
+        public override string Name { get; } = "lostUdpPacketsCount";
 
         public override string GetValue(IRequestsStorage storage)
         {

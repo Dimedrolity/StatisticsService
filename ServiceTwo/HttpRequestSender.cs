@@ -5,7 +5,7 @@ using MiddlewareClassLibrary;
 
 namespace ServiceTwo
 {
-    public class HttpSender : ISender
+    public class HttpRequestSender : IRequestSender
     {
         private readonly HttpClient _client = new HttpClient();
 
@@ -13,7 +13,7 @@ namespace ServiceTwo
         private readonly string _urlForFinishedRequest;
         private readonly string _urlForFailedRequest;
 
-        public HttpSender(IHttpConfig config)
+        public HttpRequestSender(IHttpConfig config)
         {
             var host = config.GetHostOfStatisticsService();
 

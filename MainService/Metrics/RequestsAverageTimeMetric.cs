@@ -4,9 +4,7 @@ namespace MainService.Metrics
 {
     public class RequestsAverageTimeMetric : Metric
     {
-        public RequestsAverageTimeMetric() : base("requestsAverageTime")
-        {
-        }
+        public override string Name { get; } = "requestsAverageTime";
 
         public override string GetValue(IRequestsStorage storage)
         {

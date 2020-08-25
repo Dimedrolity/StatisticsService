@@ -6,21 +6,21 @@ using Microsoft.Extensions.Logging;
 
 namespace MiddlewareClassLibrary
 {
-    internal class ExceptionHandlerMiddlewareWithSendingToStatisticsService
+    internal class ExceptionHandlerMiddlewareWithReporting
     {
         private readonly RequestDelegate _next;
 
-        private readonly ILogger<ExceptionHandlerMiddlewareWithSendingToStatisticsService> _logger;
-        private readonly ISender _sender;
+        private readonly ILogger<ExceptionHandlerMiddlewareWithReporting> _logger;
+        private readonly IRequestSender _requestSender;
 
         private readonly ExceptionWriter _exceptionWriter = new ExceptionWriter();
 
-        public ExceptionHandlerMiddlewareWithSendingToStatisticsService(RequestDelegate next,
-            ILogger<ExceptionHandlerMiddlewareWithSendingToStatisticsService> logger, ISender sender)
+        public ExceptionHandlerMiddlewareWithReporting(RequestDelegate next,
+            ILogger<ExceptionHandlerMiddlewareWithReporting> logger, IRequestSender requestSender)
         {
             _next = next;
             _logger = logger;
-            _sender = sender;
+            _requestSender = requestSender;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -49,7 +49,7 @@ namespace MiddlewareClassLibrary
                 {"fail-time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
-            await _sender.SendFailedRequestAsync(contentAboutFailedRequest);
+            await _requestSender.SendFailedRequestAsync(contentAboutFailedRequest);
         }
     }
 }

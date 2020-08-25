@@ -2,9 +2,7 @@
 {
     public class FinishedRequestsMetric : Metric
     {
-        public FinishedRequestsMetric() : base("finishedRequestsCount")
-        {
-        }
+        public override string Name { get; } = "finishedRequestsCount";
 
         public override string GetValue(IRequestsStorage storage)
         {

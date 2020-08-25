@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 
 namespace ServiceOne
 {
-    public class UdpSender : ISender
+    public class UdpRequestSender : IRequestSender
     {
         private readonly string _host;
         private readonly int _port;
 
-        public UdpSender(IUdpConfig config)
+        public UdpRequestSender(IUdpConfig config)
         {
             _host = config.GetHost();
             _port = config.GetPort();

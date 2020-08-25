@@ -12,7 +12,7 @@ namespace MiddlewareClassLibrary
         public static IApplicationBuilder UseCustomExceptionHandlerWithSendingToStatisticsService(
             this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<ExceptionHandlerMiddlewareWithSendingToStatisticsService>();
+            return builder.UseMiddleware<ExceptionHandlerMiddlewareWithReporting>();
         }
     }
 }

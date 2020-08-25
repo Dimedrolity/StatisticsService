@@ -13,7 +13,7 @@ namespace ServiceOne
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IUdpConfig, UdpConfig>();
-            services.AddSingleton<ISender, UdpSender>();
+            services.AddSingleton<IRequestSender, UdpRequestSender>();
             services.AddControllers();
         }
 

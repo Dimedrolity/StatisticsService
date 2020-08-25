@@ -6,9 +6,7 @@ namespace MainService.Metrics
 {
     public class RequestsMedianTimeMetric : Metric
     {
-        public RequestsMedianTimeMetric() : base("requestsMedianTime")
-        {
-        }
+        public override string Name { get; } = "requestsMedianTime";
 
         public override string GetValue(IRequestsStorage storage)
         {
