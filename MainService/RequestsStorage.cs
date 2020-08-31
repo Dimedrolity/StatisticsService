@@ -18,37 +18,35 @@ namespace MainService
             RequestsWithErrors = new ConcurrentBag<FailedRequest>();
         }
 
-        public void SaveStartedRequest(string guid, string method, string url, long startTime)
+        public void SaveStartedRequest(string guid, string host, string method, long startTime)
         {
-            var request = new UnfinishedRequest(guid, method, startTime);
+            var request = new UnfinishedRequest(host, method, startTime);
             UnfinishedRequests.TryAdd(guid, request);
         }
 
-        public void SaveFinishedRequest(string guid, long finish)
+        public void SaveFinishedRequest(string guid, string host, string method, long finish)
         {
             var isRemoved = UnfinishedRequests.TryRemove(guid, out var startedRequest);
 
             if (isRemoved)
             {
-                var method = startedRequest.Method;
-                var url = startedRequest.Url;
                 var elapsedTime = (int) (finish - startedRequest.StartTimeInMilliseconds);
-                var finishedRequest = new FinishedRequest(method, url, elapsedTime);
+                var finishedRequest = new FinishedRequest(host, method, elapsedTime);
                 FinishedRequests.TryAdd(guid, finishedRequest);
             }
             else if (!UnfinishedRequests.ContainsKey(guid) && !FinishedRequests.ContainsKey(guid))
             {
-                var unknownFailedRequest = new FailedRequest("no method", "no url", finish);
+                var unknownFailedRequest = new FailedRequest(host, method, finish);
                 LostUdpPackets.Add(unknownFailedRequest);
             }
         }
 
-        public void SaveFailedHttpRequest(string guid, long failTime)
+        public void SaveFailedRequest(string guid, string host, string method, long failTime)
         {
-            if (!UnfinishedRequests.TryRemove(guid, out var startedRequest)) 
+            if (!UnfinishedRequests.TryRemove(guid, out _))
                 return;
-            
-            var request = new FailedRequest(startedRequest.Method, startedRequest.Url, failTime);
+
+            var request = new FailedRequest(host, method, failTime);
             RequestsWithErrors.Add(request);
         }
     }

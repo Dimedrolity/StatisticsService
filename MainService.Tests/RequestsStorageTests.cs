@@ -15,7 +15,7 @@ namespace MainService.Tests
         [Test]
         public void SaveStartedRequest_AddsRequestToUnfinishedRequests()
         {
-            _storage.SaveStartedRequest("123", "method", "url", 0);
+            _storage.SaveStartedRequest("123", "url", "method", 0);
 
             var actual = _storage.UnfinishedRequests.Count;
             var expected = 1;
@@ -26,8 +26,8 @@ namespace MainService.Tests
         [Test]
         public void SaveFinishedRequest_RemovesRequestFromUnfinishedRequests()
         {
-            _storage.SaveStartedRequest("123", "method", "url", 0);
-            _storage.SaveFinishedRequest("123", 1);
+            _storage.SaveStartedRequest("123", "url", "method", 0);
+            _storage.SaveFinishedRequest("123", "url", "method", 1);
 
             var actual = _storage.UnfinishedRequests.Count;
             var expected = 0;
@@ -38,12 +38,12 @@ namespace MainService.Tests
         [Test]
         public void SaveFinishedRequest_AddsRequestToFinishedRequests()
         {
-            _storage.SaveStartedRequest("123", "method", "url", 0);
-            _storage.SaveFinishedRequest("123", 1);
-
+            _storage.SaveStartedRequest("123", "url", "method", 0);
+            _storage.SaveFinishedRequest("123", "url", "method", 1);
+        
             var actual = _storage.FinishedRequests.Count;
             var expected = 1;
-
+        
             Assert.AreEqual(expected, actual);
         }
     }

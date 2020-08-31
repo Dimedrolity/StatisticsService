@@ -46,6 +46,7 @@ namespace MiddlewareClassLibrary
             var contentAboutFailedRequest = new Dictionary<string, string>
             {
                 {"guid", (string) context.Items["guid"]},
+                {"host", context.Request.Host.Value}, {"method", context.Request.Method},
                 {"fail-time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 

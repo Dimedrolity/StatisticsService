@@ -1,16 +1,18 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MainService.Requests;
 
 namespace MainService.Metrics
 {
-    public class RequestsMinTimeMetric : Metric
+    public class RequestsMinTimeMetric : Metric<FinishedRequest>
     {
         public override string Name { get; } = "requestsMinTime";
 
-        public override string GetValue(IRequestsStorage storage)
+        protected override string CalculateValue(ICollection<FinishedRequest> requests)
         {
-            return (storage.FinishedRequests.Count == 0
+            return (requests.Count == 0
                     ? 0
-                    : storage.FinishedRequests.Values
+                    : requests
                         .Min(req => req.ElapsedTimeInMilliseconds))
                 .ToString();
         }

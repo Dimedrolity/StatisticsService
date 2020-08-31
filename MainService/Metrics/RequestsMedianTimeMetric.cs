@@ -1,24 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using MainService.Requests;
 
 namespace MainService.Metrics
 {
-    public class RequestsMedianTimeMetric : Metric
+    public class RequestsMedianTimeMetric : Metric<FinishedRequest>
     {
         public override string Name { get; } = "requestsMedianTime";
 
-        public override string GetValue(IRequestsStorage storage)
+        protected override string CalculateValue(ICollection<FinishedRequest> requests)
         {
-            return (storage.FinishedRequests.Count == 0
+            return (requests.Count == 0
                     ? 0
-                    : GetMedian(storage.FinishedRequests.Values
+                    : GetMedian(requests
                         .Select(req => req.ElapsedTimeInMilliseconds)
                         .ToArray()))
                 .ToString(CultureInfo.InvariantCulture);
         }
 
-        public static int GetMedian(int[] numbers)
+        private static int GetMedian(int[] numbers)
         {
             Array.Sort(numbers);
             var size = numbers.Length;

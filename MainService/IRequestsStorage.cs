@@ -10,8 +10,8 @@ namespace MainService
         ConcurrentBag<FailedRequest> LostUdpPackets { get; }
         ConcurrentBag<FailedRequest> RequestsWithErrors { get; }
 
-        void SaveStartedRequest(string guid, string method, string url, long startTime);
-        void SaveFinishedRequest(string guid, long finishTime);
-        void SaveFailedHttpRequest(string guid, long failTime);
+        void SaveStartedRequest(string guid, string host, string method, long startTime);
+        void SaveFinishedRequest(string guid, string host, string method, long finishTime);
+        void SaveFailedRequest(string guid, string host, string method, long failTime);
     }
 }

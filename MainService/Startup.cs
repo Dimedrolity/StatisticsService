@@ -1,6 +1,7 @@
 using System.IO;
 using MainService.Controllers;
 using MainService.Metrics;
+using MainService.Requests;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,15 +19,17 @@ namespace MainService
             services.AddSingleton<IRequestsStorage, RequestsStorage>();
             services.AddSingleton<IOldRequestsCleaner, OldRequestsCleaner>();
 
-            services.AddSingleton<Metric, UnfinishedRequestsMetric>();
-            services.AddSingleton<Metric, FinishedRequestsMetric>();
-            services.AddSingleton<Metric, RequestsAverageTimeMetric>();
-            services.AddSingleton<Metric, RequestsMinTimeMetric>();
-            services.AddSingleton<Metric, RequestsMaxTimeMetric>();
-            services.AddSingleton<Metric, RequestsMedianTimeMetric>();
-            services.AddSingleton<Metric, RequestsWithErrorsMetric>();
-            services.AddSingleton<Metric, LostUdpPacketsMetric>();
+            services.AddSingleton<Metric<UnfinishedRequest>, UnfinishedRequestsCountMetric>();
+            services.AddSingleton<Metric<FinishedRequest>, FinishedRequestsCountMetric>();
+            services.AddSingleton<Metric<FinishedRequest>, RequestsAverageTimeMetric>();
+            services.AddSingleton<Metric<FinishedRequest>, RequestsMinTimeMetric>();
+            services.AddSingleton<Metric<FinishedRequest>, RequestsMaxTimeMetric>();
+            services.AddSingleton<Metric<FinishedRequest>, RequestsMedianTimeMetric>();
+            services.AddSingleton<Metric<FailedRequest>, RequestsWithErrorsCountMetric>();
+            services.AddSingleton<Metric<FailedRequest>, LostUdpPacketsCountMetric>();
             services.AddSingleton<IMetricsProvider, MetricsProvider>();
+            services.AddSingleton<IRequestsProvider, RequestsProvider>();
+            services.AddSingleton<IStatisticsProvider, StatisticsProvider>();
 
             services.AddSingleton<IUdpConfig, UdpConfig>();
             services.AddSingleton<IUdpListener, UdpListener>();

@@ -4,7 +4,7 @@
     {
         public long StartTimeInMilliseconds { get; }
 
-        public UnfinishedRequest(string method, string url, long startTimeInMilliseconds) : base(method, url)
+        public UnfinishedRequest(string host, string method, long startTimeInMilliseconds) : base(host, method)
         {
             StartTimeInMilliseconds = startTimeInMilliseconds;
         }

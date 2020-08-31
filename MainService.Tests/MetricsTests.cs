@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections.Generic;
 using FakeItEasy;
 using MainService.Metrics;
 using MainService.Requests;
@@ -8,27 +8,46 @@ namespace MainService.Tests
 {
     public class MetricsTests
     {
-        private IRequestsStorage _storage;
+        private IRequestsProvider _requestsProvider;
 
         [SetUp]
         public void Setup()
         {
-            _storage = A.Fake<IRequestsStorage>();
+            _requestsProvider = A.Fake<IRequestsProvider>();
         }
 
         [Test]
         public void UnfinishedRequestsMetric_IsCorrect()
         {
-            var unfinishedRequests = new ConcurrentDictionary<string, UnfinishedRequest>();
-            unfinishedRequests.TryAdd("123", new UnfinishedRequest("method", "url", 0));
-            unfinishedRequests.TryAdd("456", new UnfinishedRequest("method", "url2", 0));
+            var request1 = new UnfinishedRequest(null, null, 0);
+            var request2 = new UnfinishedRequest(null, null, 0);
 
-            A.CallTo(() => _storage.UnfinishedRequests).Returns(unfinishedRequests);
+            A.CallTo(() => _requestsProvider.GetUnfinishedRequestsInHierarchicalStructure())
+                .Returns(
+                    new Dictionary<string, Dictionary<string, List<UnfinishedRequest>>>
+                    {
+                        {
+                            "url", new Dictionary<string, List<UnfinishedRequest>>()
+                            {
+                                {
+                                    "method", new List<UnfinishedRequest>()
+                                    {
+                                        request1, request2
+                                    }
+                                }
+                            }
+                        }
+                    });
 
-            var metric = new UnfinishedRequestsMetric();
+            var metric = new UnfinishedRequestsCountMetric();
 
-            var actual = metric.GetValue(_storage);
-            var expected = _storage.UnfinishedRequests.Count.ToString();
+            var requests =
+                _requestsProvider.GetUnfinishedRequestsInHierarchicalStructure();
+
+            var statistics = metric.GetStatistics(requests);
+
+            var actual = statistics["url"]["method"][metric.Name];
+            var expected = 2.ToString();
 
             Assert.AreEqual(expected, actual);
         }
@@ -36,35 +55,72 @@ namespace MainService.Tests
         [Test]
         public void FinishedRequestsCountMetric_IsCorrect()
         {
-            var unfinishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
-            unfinishedRequests.TryAdd("123", new FinishedRequest("method", "url", 0));
-            unfinishedRequests.TryAdd("456", new FinishedRequest("method", "url2", 0));
+            var request1 = new FinishedRequest(null, null, 0);
+            var request2 = new FinishedRequest(null, null, 0);
 
-            A.CallTo(() => _storage.FinishedRequests).Returns(unfinishedRequests);
+            A.CallTo(() => _requestsProvider.GetFinishedRequestsInHierarchicalStructure())
+                .Returns(
+                    new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
+                    {
+                        {
+                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            {
+                                {
+                                    "method", new List<FinishedRequest>()
+                                    {
+                                        request1, request2
+                                    }
+                                }
+                            }
+                        }
+                    });
 
-            var metric = new FinishedRequestsMetric();
+            var metric = new FinishedRequestsCountMetric();
 
-            var actual = metric.GetValue(_storage);
-            var expected = _storage.FinishedRequests.Count.ToString();
+            var requests =
+                _requestsProvider.GetFinishedRequestsInHierarchicalStructure();
+
+            var statistics = metric.GetStatistics(requests);
+
+            var actual = statistics["url"]["method"][metric.Name];
+            var expected = 2.ToString();
 
             Assert.AreEqual(expected, actual);
         }
 
+
         [Test]
         public void RequestsWithErrorsMetric_IsCorrect()
         {
-            var unfinishedRequests = new ConcurrentBag<FailedRequest>
-            {
-                new FailedRequest("method", "url", 0),
-                new FailedRequest("method", "url2", 0)
-            };
+            var request1 = new FailedRequest(null, null, 0);
+            var request2 = new FailedRequest(null, null, 0);
 
-            A.CallTo(() => _storage.RequestsWithErrors).Returns(unfinishedRequests);
+            A.CallTo(() => _requestsProvider.GetRequestsWithErrorsInHierarchicalStructure())
+                .Returns(
+                    new Dictionary<string, Dictionary<string, List<FailedRequest>>>
+                    {
+                        {
+                            "url", new Dictionary<string, List<FailedRequest>>()
+                            {
+                                {
+                                    "method", new List<FailedRequest>()
+                                    {
+                                        request1, request2
+                                    }
+                                }
+                            }
+                        }
+                    });
 
-            var metric = new RequestsWithErrorsMetric();
+            var metric = new RequestsWithErrorsCountMetric();
 
-            var actual = metric.GetValue(_storage);
-            var expected = _storage.RequestsWithErrors.Count.ToString();
+            var requests =
+                _requestsProvider.GetRequestsWithErrorsInHierarchicalStructure();
+
+            var statistics = metric.GetStatistics(requests);
+
+            var actual = statistics["url"]["method"][metric.Name];
+            var expected = 2.ToString();
 
             Assert.AreEqual(expected, actual);
         }
@@ -72,34 +128,73 @@ namespace MainService.Tests
         [Test]
         public void RequestsAverageTimeMetric_IsCorrect()
         {
-            var finishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
-            finishedRequests.TryAdd("1", new FinishedRequest("method", "url", 100));
-            finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
-            finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
+            var request1 = new FinishedRequest(null, null, 100);
+            var request2 = new FinishedRequest(null, null, 200);
+            var request3 = new FinishedRequest(null, null, 300);
 
-            A.CallTo(() => _storage.FinishedRequests).Returns(finishedRequests);
+            A.CallTo(() => _requestsProvider.GetFinishedRequestsInHierarchicalStructure())
+                .Returns(
+                    new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
+                    {
+                        {
+                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            {
+                                {
+                                    "method", new List<FinishedRequest>()
+                                    {
+                                        request1, request2, request3
+                                    }
+                                }
+                            }
+                        }
+                    });
 
             var metric = new RequestsAverageTimeMetric();
 
-            var actual = metric.GetValue(_storage);
+            var requests =
+                _requestsProvider.GetFinishedRequestsInHierarchicalStructure();
+
+            var statistics = metric.GetStatistics(requests);
+
+            var actual = statistics["url"]["method"][metric.Name];
             var expected = 200.ToString();
 
             Assert.AreEqual(expected, actual);
         }
 
+
         [Test]
         public void RequestsMinTimeMetric_IsCorrect()
         {
-            var finishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
-            finishedRequests.TryAdd("1", new FinishedRequest("method", "url", 100));
-            finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
-            finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
+            var request1 = new FinishedRequest(null, null, 100);
+            var request2 = new FinishedRequest(null, null, 200);
+            var request3 = new FinishedRequest(null, null, 300);
 
-            A.CallTo(() => _storage.FinishedRequests).Returns(finishedRequests);
+            A.CallTo(() => _requestsProvider.GetFinishedRequestsInHierarchicalStructure())
+                .Returns(
+                    new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
+                    {
+                        {
+                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            {
+                                {
+                                    "method", new List<FinishedRequest>()
+                                    {
+                                        request1, request2, request3
+                                    }
+                                }
+                            }
+                        }
+                    });
 
             var metric = new RequestsMinTimeMetric();
 
-            var actual = metric.GetValue(_storage);
+            var requests =
+                _requestsProvider.GetFinishedRequestsInHierarchicalStructure();
+
+            var statistics = metric.GetStatistics(requests);
+
+            var actual = statistics["url"]["method"][metric.Name];
             var expected = 100.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -108,35 +203,74 @@ namespace MainService.Tests
         [Test]
         public void RequestsMaxTimeMetric_IsCorrect()
         {
-            var finishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
-            finishedRequests.TryAdd("1", new FinishedRequest("method", "url", 100));
-            finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
-            finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 300));
+            var request1 = new FinishedRequest(null, null, 100);
+            var request2 = new FinishedRequest(null, null, 200);
+            var request3 = new FinishedRequest(null, null, 300);
 
-            A.CallTo(() => _storage.FinishedRequests).Returns(finishedRequests);
+            A.CallTo(() => _requestsProvider.GetFinishedRequestsInHierarchicalStructure())
+                .Returns(
+                    new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
+                    {
+                        {
+                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            {
+                                {
+                                    "method", new List<FinishedRequest>()
+                                    {
+                                        request1, request2, request3
+                                    }
+                                }
+                            }
+                        }
+                    });
 
             var metric = new RequestsMaxTimeMetric();
 
-            var actual = metric.GetValue(_storage);
+            var requests =
+                _requestsProvider.GetFinishedRequestsInHierarchicalStructure();
+
+            var statistics = metric.GetStatistics(requests);
+
+            var actual = statistics["url"]["method"][metric.Name];
             var expected = 300.ToString();
 
             Assert.AreEqual(expected, actual);
         }
 
+
         [Test]
         public void RequestsMedianTimeMetric_EvenRequestsCount_IsCorrect()
         {
-            var finishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
-            finishedRequests.TryAdd("1", new FinishedRequest("method", "url", 100));
-            finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 200));
-            finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 400));
-            finishedRequests.TryAdd("4", new FinishedRequest("method", "url2", 800));
+            var request1 = new FinishedRequest(null, null, 100);
+            var request2 = new FinishedRequest(null, null, 200);
+            var request3 = new FinishedRequest(null, null, 400);
+            var request4 = new FinishedRequest(null, null, 800);
 
-            A.CallTo(() => _storage.FinishedRequests).Returns(finishedRequests);
+            A.CallTo(() => _requestsProvider.GetFinishedRequestsInHierarchicalStructure())
+                .Returns(
+                    new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
+                    {
+                        {
+                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            {
+                                {
+                                    "method", new List<FinishedRequest>()
+                                    {
+                                        request1, request2, request3, request4
+                                    }
+                                }
+                            }
+                        }
+                    });
 
             var metric = new RequestsMedianTimeMetric();
 
-            var actual = metric.GetValue(_storage);
+            var requests =
+                _requestsProvider.GetFinishedRequestsInHierarchicalStructure();
+
+            var statistics = metric.GetStatistics(requests);
+
+            var actual = statistics["url"]["method"][metric.Name];
             var expected = 300.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -145,16 +279,35 @@ namespace MainService.Tests
         [Test]
         public void RequestsMedianTimeMetric_OddRequestsCount_IsCorrect()
         {
-            var finishedRequests = new ConcurrentDictionary<string, FinishedRequest>();
-            finishedRequests.TryAdd("1", new FinishedRequest("method", "url", 333));
-            finishedRequests.TryAdd("2", new FinishedRequest("method", "url2", 444));
-            finishedRequests.TryAdd("3", new FinishedRequest("method", "url2", 555));
+            var request1 = new FinishedRequest(null, null, 333);
+            var request2 = new FinishedRequest(null, null, 444);
+            var request3 = new FinishedRequest(null, null, 555);
 
-            A.CallTo(() => _storage.FinishedRequests).Returns(finishedRequests);
+            A.CallTo(() => _requestsProvider.GetFinishedRequestsInHierarchicalStructure())
+                .Returns(
+                    new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
+                    {
+                        {
+                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            {
+                                {
+                                    "method", new List<FinishedRequest>()
+                                    {
+                                        request1, request2, request3
+                                    }
+                                }
+                            }
+                        }
+                    });
 
             var metric = new RequestsMedianTimeMetric();
 
-            var actual = metric.GetValue(_storage);
+            var requests =
+                _requestsProvider.GetFinishedRequestsInHierarchicalStructure();
+
+            var statistics = metric.GetStatistics(requests);
+
+            var actual = statistics["url"]["method"][metric.Name];
             var expected = 444.ToString();
 
             Assert.AreEqual(expected, actual);

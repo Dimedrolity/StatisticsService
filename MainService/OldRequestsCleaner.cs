@@ -32,7 +32,7 @@ namespace MainService
                     if (!_storage.UnfinishedRequests.TryRemove(guid, out var oldRequest)) continue;
 
                     var failedRequest = new FailedRequest(
-                        oldRequest.Method, oldRequest.Url, oldRequest.StartTimeInMilliseconds);
+                        oldRequest.Host, oldRequest.Method, oldRequest.StartTimeInMilliseconds);
                     _storage.LostUdpPackets.Add(failedRequest);
                 }
 

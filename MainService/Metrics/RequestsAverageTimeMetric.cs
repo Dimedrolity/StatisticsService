@@ -1,16 +1,18 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MainService.Requests;
 
 namespace MainService.Metrics
 {
-    public class RequestsAverageTimeMetric : Metric
+    public class RequestsAverageTimeMetric : Metric<FinishedRequest>
     {
         public override string Name { get; } = "requestsAverageTime";
 
-        public override string GetValue(IRequestsStorage storage)
+        protected override string CalculateValue(ICollection<FinishedRequest> requests)
         {
-            return (storage.FinishedRequests.Count == 0
+            return (requests.Count == 0
                     ? 0
-                    : (int) storage.FinishedRequests.Values
+                    : (int) requests
                         .Average(req => req.ElapsedTimeInMilliseconds))
                 .ToString();
         }

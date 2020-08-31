@@ -64,24 +64,25 @@ namespace MainService.Controllers
         {
             var guid = content["guid"];
             var host = content["host"];
-            var path = content["path"];
             var method = content["method"];
             var startTime = content["start-time-as-milliseconds-from-unix-epoch"];
-            var url = $"{host}{path}";
+
 
             await Task.Run(
-                () => _requestsStorage.SaveStartedRequest(guid, method, url, long.Parse(startTime)));
+                () => _requestsStorage.SaveStartedRequest(guid, host, method, long.Parse(startTime)));
 
-            _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}{path}\n" +
+            _logger.LogInformation($"начал выполнение запрос: {guid} метод: {method} url: {host}\n" +
                                    $"время начала запроса: {startTime}");
         }
 
         private async Task ParseContentAndSaveFinishedRequestAsync(IReadOnlyDictionary<string, string> content)
         {
             var guid = content["guid"];
+            var host = content["host"];
+            var method = content["method"];
             var finishTime = content["finish-time-as-milliseconds-from-unix-epoch"];
 
-            await Task.Run(() => _requestsStorage.SaveFinishedRequest(guid, long.Parse(finishTime)));
+            await Task.Run(() => _requestsStorage.SaveFinishedRequest(guid, host, method, long.Parse(finishTime)));
 
             _logger.LogInformation($"выполнился запрос: {guid}\n" +
                                    $"время окончания запроса: {finishTime}");
@@ -90,9 +91,11 @@ namespace MainService.Controllers
         private async Task ParseContentAndSaveFailedRequestAsync(IReadOnlyDictionary<string, string> content)
         {
             var guid = content["guid"];
+            var host = content["host"];
+            var method = content["method"];
             var failTime = content["fail-time-as-milliseconds-from-unix-epoch"];
 
-            await Task.Run(() => { _requestsStorage.SaveFailedHttpRequest(guid, long.Parse(failTime)); });
+            await Task.Run(() => { _requestsStorage.SaveFailedRequest(guid, host, method, long.Parse(failTime)); });
 
             _logger.LogInformation($"запрос завершился с ошибкой {guid}\n" +
                                    $"время ошибки: {failTime}");

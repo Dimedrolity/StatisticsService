@@ -4,7 +4,7 @@
     {
         public long ApproximateTime { get; }
 
-        public FailedRequest(string method, string url, long approximateTime) : base(method, url)
+        public FailedRequest(string host, string method, long approximateTime) : base(host, method)
         {
             ApproximateTime = approximateTime;
         }

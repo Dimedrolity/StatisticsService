@@ -1,16 +1,18 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MainService.Requests;
 
 namespace MainService.Metrics
 {
-    public class RequestsMaxTimeMetric : Metric
+    public class RequestsMaxTimeMetric : Metric<FinishedRequest>
     {
         public override string Name { get; } = "requestsMaxTime";
 
-        public override string GetValue(IRequestsStorage storage)
+        protected override string CalculateValue(ICollection<FinishedRequest> requests)
         {
-            return (storage.FinishedRequests.Count == 0
+            return (requests.Count == 0
                     ? 0
-                    : storage.FinishedRequests.Values
+                    : requests
                         .Max(req => req.ElapsedTimeInMilliseconds))
                 .ToString();
         }

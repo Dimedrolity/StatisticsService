@@ -4,17 +4,17 @@
     {
         public string Method { get; }
 
-        public string Url { get; }
+        public string Host { get; }
 
-        protected Request(string method, string url)
+        protected Request(string host, string method)
         {
             Method = method;
-            Url = url;
+            Host = host;
         }
 
         public override int GetHashCode()
         {
-            return Method.GetHashCode() + Url.GetHashCode();
+            return Method.GetHashCode() + Host.GetHashCode();
         }
     }
 }

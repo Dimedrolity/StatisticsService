@@ -22,8 +22,8 @@ namespace MiddlewareClassLibrary
 
             var contentAboutStartedRequest = new Dictionary<string, string>
             {
-                {"guid", requestGuid}, {"host", context.Request.Host.Value},
-                {"path", context.Request.Path.Value}, {"method", context.Request.Method},
+                {"guid", requestGuid},
+                {"host", context.Request.Host.Value}, {"method", context.Request.Method},
                 {"start-time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 
@@ -34,6 +34,7 @@ namespace MiddlewareClassLibrary
             var contentAboutFinishedRequest = new Dictionary<string, string>
             {
                 {"guid", requestGuid},
+                {"host", context.Request.Host.Value}, {"method", context.Request.Method},
                 {"finish-time-as-milliseconds-from-unix-epoch", DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString()}
             };
 

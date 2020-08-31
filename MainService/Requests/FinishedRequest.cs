@@ -4,7 +4,7 @@
     {
         public int ElapsedTimeInMilliseconds { get; }
 
-        public FinishedRequest(string method, string url, int elapsedTimeInMilliseconds) : base(method, url)
+        public FinishedRequest(string host, string method, int elapsedTimeInMilliseconds) : base(host, method)
         {
             ElapsedTimeInMilliseconds = elapsedTimeInMilliseconds;
         }
