@@ -77,7 +77,7 @@ namespace MainService.Controllers
         {
             if (_maintenance.IsStopped) return StatusCode(403, ErrorMessage);
 
-            await Task.Run(() => { _requestsStorage.SaveFailedRequest(guid, host, method, long.Parse(failTime)); });
+            await Task.Run(() => { _requestsStorage.SaveRequestWithError(guid, host, method, long.Parse(failTime)); });
 
             _logger.LogInformation($"запрос завершился с ошибкой {guid}\n" +
                                    $"время ошибки: {failTime}");

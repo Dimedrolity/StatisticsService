@@ -40,10 +40,34 @@ namespace MainService.Tests
         {
             _storage.SaveStartedRequest("123", "url", "method", 0);
             _storage.SaveFinishedRequest("123", "url", "method", 1);
-        
+
             var actual = _storage.FinishedRequests.Count;
             var expected = 1;
-        
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void SaveFailedRequest_RemovesRequestFromUnfinishedRequests()
+        {
+            _storage.SaveStartedRequest("123", "url", "method", 0);
+            _storage.SaveRequestWithError("123", "url", "method", 1);
+
+            var actual = _storage.UnfinishedRequests.Count;
+            var expected = 0;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void SaveFailedRequest_AddsRequestToFailedRequests()
+        {
+            _storage.SaveStartedRequest("123", "url", "method", 0);
+            _storage.SaveRequestWithError("123", "url", "method", 1);
+
+            var actual = _storage.RequestsWithErrors.Count;
+            var expected = 1;
+
             Assert.AreEqual(expected, actual);
         }
     }

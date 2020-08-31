@@ -12,6 +12,6 @@ namespace MainService
 
         void SaveStartedRequest(string guid, string host, string method, long startTime);
         void SaveFinishedRequest(string guid, string host, string method, long finishTime);
-        void SaveFailedRequest(string guid, string host, string method, long failTime);
+        void SaveRequestWithError(string guid, string host, string method, long failTime);
     }
 }

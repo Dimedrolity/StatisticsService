@@ -41,7 +41,7 @@ namespace MainService
             }
         }
 
-        public void SaveFailedRequest(string guid, string host, string method, long failTime)
+        public void SaveRequestWithError(string guid, string host, string method, long failTime)
         {
             if (!UnfinishedRequests.TryRemove(guid, out _))
                 return;

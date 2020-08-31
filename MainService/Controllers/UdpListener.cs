@@ -95,7 +95,7 @@ namespace MainService.Controllers
             var method = content["method"];
             var failTime = content["fail-time-as-milliseconds-from-unix-epoch"];
 
-            await Task.Run(() => { _requestsStorage.SaveFailedRequest(guid, host, method, long.Parse(failTime)); });
+            await Task.Run(() => { _requestsStorage.SaveRequestWithError(guid, host, method, long.Parse(failTime)); });
 
             _logger.LogInformation($"запрос завершился с ошибкой {guid}\n" +
                                    $"время ошибки: {failTime}");

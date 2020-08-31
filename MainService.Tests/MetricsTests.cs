@@ -27,10 +27,10 @@ namespace MainService.Tests
                     new Dictionary<string, Dictionary<string, List<UnfinishedRequest>>>
                     {
                         {
-                            "url", new Dictionary<string, List<UnfinishedRequest>>()
+                            "url", new Dictionary<string, List<UnfinishedRequest>>
                             {
                                 {
-                                    "method", new List<UnfinishedRequest>()
+                                    "method", new List<UnfinishedRequest>
                                     {
                                         request1, request2
                                     }
@@ -63,10 +63,10 @@ namespace MainService.Tests
                     new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
                     {
                         {
-                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            "url", new Dictionary<string, List<FinishedRequest>>
                             {
                                 {
-                                    "method", new List<FinishedRequest>()
+                                    "method", new List<FinishedRequest>
                                     {
                                         request1, request2
                                     }
@@ -100,10 +100,10 @@ namespace MainService.Tests
                     new Dictionary<string, Dictionary<string, List<FailedRequest>>>
                     {
                         {
-                            "url", new Dictionary<string, List<FailedRequest>>()
+                            "url", new Dictionary<string, List<FailedRequest>>
                             {
                                 {
-                                    "method", new List<FailedRequest>()
+                                    "method", new List<FailedRequest>
                                     {
                                         request1, request2
                                     }
@@ -137,10 +137,10 @@ namespace MainService.Tests
                     new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
                     {
                         {
-                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            "url", new Dictionary<string, List<FinishedRequest>>
                             {
                                 {
-                                    "method", new List<FinishedRequest>()
+                                    "method", new List<FinishedRequest>
                                     {
                                         request1, request2, request3
                                     }
@@ -175,10 +175,10 @@ namespace MainService.Tests
                     new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
                     {
                         {
-                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            "url", new Dictionary<string, List<FinishedRequest>>
                             {
                                 {
-                                    "method", new List<FinishedRequest>()
+                                    "method", new List<FinishedRequest>
                                     {
                                         request1, request2, request3
                                     }
@@ -212,10 +212,10 @@ namespace MainService.Tests
                     new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
                     {
                         {
-                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            "url", new Dictionary<string, List<FinishedRequest>>
                             {
                                 {
-                                    "method", new List<FinishedRequest>()
+                                    "method", new List<FinishedRequest>
                                     {
                                         request1, request2, request3
                                     }
@@ -251,10 +251,10 @@ namespace MainService.Tests
                     new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
                     {
                         {
-                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            "url", new Dictionary<string, List<FinishedRequest>>
                             {
                                 {
-                                    "method", new List<FinishedRequest>()
+                                    "method", new List<FinishedRequest>
                                     {
                                         request1, request2, request3, request4
                                     }
@@ -288,10 +288,10 @@ namespace MainService.Tests
                     new Dictionary<string, Dictionary<string, List<FinishedRequest>>>
                     {
                         {
-                            "url", new Dictionary<string, List<FinishedRequest>>()
+                            "url", new Dictionary<string, List<FinishedRequest>>
                             {
                                 {
-                                    "method", new List<FinishedRequest>()
+                                    "method", new List<FinishedRequest>
                                     {
                                         request1, request2, request3
                                     }
